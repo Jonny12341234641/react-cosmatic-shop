@@ -94,3 +94,16 @@ export function isAdmin(req){
         }
     }
 }
+
+export function isCustomer(req){
+
+    if(req.user == null){
+        return false
+    }else{
+        if(req.user.role != "customer"){
+            return false
+        }else{
+            return true
+        }
+    }
+}
