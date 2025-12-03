@@ -1,0 +1,15 @@
+XML (eXtensible Markup Language) is a markup language used to store and transport data. It is both human-readable and machine-readable. XML uses tags to define elements and a tree structure to organize data.
+
+Key points about XML:
+- Tags are user-defined and must be properly nested.
+- XML is platform-independent and widely used for data exchange.
+- It does not display data but describes the structure and meaning of data.
+- Example:
+    <note>
+        <to>Kavin</to>
+        <from>Copilot</from>
+        <message>Hello, this is an XML note!</message>
+    </note>
+- XML files usually have a `.xml` extension.
+
+XML is commonly used in web services, configuration files, and data storage.
