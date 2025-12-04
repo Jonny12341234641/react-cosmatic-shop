@@ -1,0 +1,127 @@
+import Product from "../models/product.js";
+import { isAdmin } from "./userController.js";
+
+export async function createProduct(req, res){
+
+    if(!isAdmin(req)){
+        res.status(403).json({
+            message : "You are not authorized to create a product"
+        })
+        return
+    }
+
+    try{
+        const productData = req.body;
+
+    const product = new Product(productData)
+
+    await product.save()
+
+    res.json({
+        message : "Product saved successfully",
+        product : product,
+    })
+    }
+    catch(error){
+        console.error(error);
+        res.status(500).json({
+            message : "Failed to create product"
+        })
+    }
+
+    
+}
+
+export async function getProduct(req, res){
+    try{
+        const products = await Product.find()
+        res.json(products);
+    }
+    catch(error){
+        console.error(error);
+        res.status(500).json({
+            message : "Failed to get products"
+        })
+    }
+}
+
+export async function deleteProduct(req, res){
+
+    if(!isAdmin(req)){
+        res.status(403).json({
+            message : "You are not authorized to delete a product"
+        })
+        return
+    }
+
+    try{
+        const productID = req.params.productID  //getting the product id
+        if(productID == null){
+            res.status(400).json({
+                message : "Product ID is required"
+            })
+            return;
+
+        await Product.deleteOne({
+            productID : productID
+        })
+        res.json({
+            message : "Product deleted successfully"
+        })
+        }
+    }catch(error){
+        console.error(error);
+        req.status(500).json({
+            message : "Failed to delete product"
+        })
+    }
+}
+
+export async function updateProduct(req, res){
+    if(!isAdmin(req)){
+        res.status(403).json({
+            message : "You are not authorized to update a product"
+        })
+        return;
+    }
+    
+    try{
+        const productID = req.params.productID;
+        const updatedData = req.body;
+        await Product.updateOne(
+            {productID : productID},
+            {updatedData}
+        );
+        res.json({
+            message : "Product updated successfully"
+        });
+    }catch{
+        console.error(error);
+        res.status(500).json({
+            message : "Failed to update product"
+        })
+    }
+}
+
+export async function getProductId(req, res){
+    try{
+        const productID = req.params.productID;
+        const product = await Product.findOne({
+            productID : productID
+        });
+        if(product == null){
+            res.status(404).json({
+                message : "Product not found"
+            })
+            return;
+        }else{
+            res.json(product);
+        }
+        res.json(product);
+    }catch(error){
+        console.error(error);
+        res.status(500).json({
+            message : "Failed to get product"
+        })
+    }
+} 
