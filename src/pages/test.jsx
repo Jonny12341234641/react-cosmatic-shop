@@ -2,7 +2,7 @@ import { useState } from "react";
 
 export default function TestPage() {
 
-    const[count, setCount] = useState(150);
+    const[count, setCount] = useState(150); 
     const[status, setStatus] = useState("Online");
     
 
