@@ -12,7 +12,7 @@ export default function TestPage() {
                 <div className="flex justify-center items-center gap-[25px]">
                 <button onClick={
                     ()=>{
-                        console.log("Decreasing...")
+                        console.log("Decreasing it...")
                         setCount(count - 1);
                     }
                 } className="w-[100px] bg-accent h-[40px] rounded-lg">-</button>
