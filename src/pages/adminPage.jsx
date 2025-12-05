@@ -3,6 +3,7 @@ import { FaChartLine } from "react-icons/fa";
 import { BsCartPlusFill } from "react-icons/bs";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { AiOutlineProduct } from "react-icons/ai";
+import AdminProductPage from "./admin/adminProductPage";
 
 
 
@@ -15,19 +16,19 @@ export default function AdminPage() {
                         <img className="h-[95px] object-cover" src="/logo.png" alt="" />
                         <span className="text-white text-lg ml-4">Admin Panel</span>
                     </div>
-                    <Link to="/admin" className="w-[90%] text-secondary flex items-center gap-2 px-4 hover:bg-accent rounded-lg">
+                    <Link to="/admin" className="w-[90%] text-secondary flex items-center gap-2 p-4 hover:bg-accent rounded-lg">
                         <FaChartLine className="text-secondary text-2xl" />
                         Dashboard
                     </Link>
-                    <Link to="/admin/orders" className="w-[90%] text-secondary flex items-center gap-2 px-4 hover:bg-accent rounded-lg">
+                    <Link to="/admin/orders" className="w-[90%] text-secondary flex items-center gap-2 p-4 hover:bg-accent rounded-lg">
                         <BsCartPlusFill className="text-secondary text-2xl" />
                         Orders
                     </Link>
-                    <Link to="/admin/products" className="w-[90%] text-secondary flex items-center gap-2 px-4 hover:bg-accent rounded-lg">
+                    <Link to="/admin/products" className="w-[90%] text-secondary flex items-center gap-2 p-4 hover:bg-accent rounded-lg">
                         <AiOutlineProduct className="text-secondary text-2xl" />
                         Products
                     </Link>
-                    <Link to="/admin/users" className="w-[90%] text-secondary flex items-center gap-2 px-4 hover:bg-accent rounded-lg">
+                    <Link to="/admin/users" className="w-[90%] text-secondary flex items-center gap-2 p-4 hover:bg-accent rounded-lg">
                         <HiOutlineUsers className="text-secondary text-2xl" />
                         Users
                     </Link>
@@ -36,7 +37,7 @@ export default function AdminPage() {
                     <div className="h-full width-full max-width-full max-h-full overflow-y-scroll">
                         <Routes path="/">
                             <Route path="/" element={<h1>Dashboard</h1>}></Route>
-                            <Route path="/products" element={<h1>Products</h1>}></Route>
+                            <Route path="/products" element={<AdminProductPage />}></Route>
                             <Route path="/orders" element={<h1>Orders</h1>}></Route>
                         </Routes>
                     </div>
