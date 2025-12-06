@@ -1,171 +1,7 @@
-
-// import { useState } from 'react';
-// import axios from 'axios';
-// export default function LoginPage() {
-
-//     const [email, setEmail] = useState("");
-//     const [password, setPassword] = useState("");
-
-//     async function login() {
-//         const response = await axios.post(import.meta.env.VITE_API_URL + "/api/users/login", { //*
-//             email : email,
-//             password : password
-//         });
-//     }
-
-//     return (
-//             <div className="w-full h-full bg-[url(/src/assets/login.jpg)] bg-cover bg-center bg-no-repeat flex">
-//                 <div className="w-[50%] h-full border border-white">
-
-//                 </div>
-
-//                 <div className="w-[50%] h-full border border-white flex justify-center items-center">
-//                     <div className="w-[500px] h-[500px] border border-white backdrop-blur-md shadow-2xl rounded-[20px] flex flex-col justify-center items-center gap-[20px]">
-//                         <input onChange={
-//                             (e)=>{
-//                                 console.log("Email changed...")
-//                                 setEmail(e.target.value)
-//                             }
-//                         } type="text" className="w-[400px] h-[40px] bg-white shadow-2xl rounded" />
-//                         <input onChange={
-//                             (e)=>{
-//                                 console.log("Password changed")
-//                                 setPassword(e.target.value)
-//                             }
-//                         } type="password" className="w-[400px] h-[40px] bg-white shadow-2xl rounded" />
-//                         <button onClick={login} className="bg-red-900 w-[400px] h-[40px] ">
-//                             Login
-//                         </button>
-//                     </div>
-//                 </div>
-//             </div>
-//     )
-// }
-
-
-// import { useState } from 'react';
-// import axios from 'axios';
-// import { useNavigate } from 'react-router-dom';
-
-// export default function LoginPage() {
-
-//     const [email, setEmail] = useState("");
-//     const [password, setPassword] = useState("");
-//     const navigate = useNavigate();
-
-//     async function login() {
-//         try{
-//             const response = await axios.post(import.meta.env.VITE_API_URL + "/api/users/login", {  
-//             email : email,
-//             password : password
-//         });
-
-//         const user = response.data.user;
-//         if(user.role == "admin"){
-//             navigate("/admin"); // Redirect to the admin page
-//         }else{
-//             navigate("/"); // Redirect to the home page
-//         }
-//         }catch(e){
-//             if(e.response.status == 404){
-//                 alert("User not found");
-//         }
-//         }
-//     }
-
-//     return (
-//         <div className="w-full min-h-screen flex font-sans text-secondary">
-            
-//             {/* Left Side: Image & Logo */}
-//             <div className="hidden lg:flex lg:w-1/2 relative bg-[url(/src/assets/login.jpg)] bg-cover bg-center">
-//                 {/* Dark Overlay for contrast */}
-//                 <div className="absolute inset-0 bg-black/30 backdrop-blur-[2px]"></div>
-                
-//                 {/* Logo Placement */}
-//                 <div className="absolute top-10 left-10 z-10">
-//                     <img src="/logo.png" alt="CBC Logo" className="w-32 opacity-90 hover:opacity-100 transition-opacity" />
-//                 </div>
-
-//                 <div className="relative z-10 w-full h-full flex flex-col justify-end p-16">
-//                     <h2 className="text-white text-4xl font-bold leading-tight">Crystal Beauty Clear</h2>
-//                     <p className="text-white/80 mt-4 text-lg">Experience the elegance of pure beauty.</p>
-//                 </div>
-//             </div>
-
-//             {/* Right Side: Login Form */}
-//             <div className="w-full lg:w-1/2 bg-primary flex flex-col justify-center items-center p-8">
-                
-//                 {/* Mobile Logo (Visible only on small screens) */}
-//                 <div className="lg:hidden mb-8">
-//                      {/* Using a dark version or filter for the white logo on light bg, or a container */}
-//                     <div className="bg-secondary p-3 rounded-full">
-//                         <img src="/logo.png" alt="CBC Logo" className="w-16" />
-//                     </div>
-//                 </div>
-
-//                 <div className="w-full max-w-[450px] bg-white/60 backdrop-blur-xl border border-white shadow-xl rounded-3xl p-10 flex flex-col gap-6">
-                    
-//                     <div className="text-center mb-2">
-//                         <h1 className="text-3xl font-bold text-secondary tracking-tight">Welcome Back</h1>
-//                         <p className="text-secondary/60 text-sm mt-2">Please enter your details to sign in.</p>
-//                     </div>
-
-//                     <div className="flex flex-col gap-5">
-//                         {/* Email Input */}
-//                         <div className="flex flex-col gap-2">
-//                             <label className="text-sm font-semibold ml-1 text-secondary/80">Email</label>
-//                             <input 
-//                                 onChange={(e)=>{
-//                                     console.log("Email changed...")
-//                                     setEmail(e.target.value)
-//                                 }} 
-//                                 type="text" 
-//                                 placeholder="example@cbc.com"
-//                                 className="w-full h-[50px] px-4 bg-white border border-secondary/10 rounded-xl outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all shadow-sm text-secondary placeholder:text-secondary/30" 
-//                             />
-//                         </div>
-
-//                         {/* Password Input */}
-//                         <div className="flex flex-col gap-2">
-//                             <label className="text-sm font-semibold ml-1 text-secondary/80">Password</label>
-//                             <input 
-//                                 onChange={(e)=>{
-//                                     console.log("Password changed")
-//                                     setPassword(e.target.value)
-//                                 }} 
-//                                 type="password" 
-//                                 placeholder="••••••••"
-//                                 className="w-full h-[50px] px-4 bg-white border border-secondary/10 rounded-xl outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all shadow-sm text-secondary placeholder:text-secondary/30" 
-//                             />
-//                         </div>
-//                     </div>
-
-//                     {/* Action Buttons */}
-//                     <div className="mt-4">
-//                         <button 
-//                             onClick={login} 
-//                             className="w-full h-[50px] bg-accent text-white font-bold rounded-xl shadow-lg shadow-accent/30 hover:shadow-accent/50 hover:-translate-y-0.5 transition-all duration-300 active:scale-[0.98] cursor-pointer"
-//                         >
-//                             Login
-//                         </button>
-//                     </div>
-
-//                     <div className="text-center text-sm text-secondary/60">
-//                         Don't have an account? <span className="text-accent font-bold cursor-pointer hover:underline">Sign Up</span>
-//                     </div>
-
-//                 </div>
-//             </div>
-//         </div>
-//     )
-// }
-
-
-
 import { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import toast from 'react-hot-toast/headless';
+import toast from 'react-hot-toast'; // FIX 1: Removed '/headless' so popups actually show
 
 export default function LoginPage() {
 
@@ -174,27 +10,35 @@ export default function LoginPage() {
     const navigate = useNavigate();
 
     async function login() {
-        try{
+        try {
             const response = await axios.post(import.meta.env.VITE_API_URL + "/api/users/login", {  
-            email : email,
-            password : password
-        });
+                email : email,
+                password : password
+            });
 
-        localStorage.setItem("token", response.data.token); // Store the token in local storage
+            // Store token and user data
+            localStorage.setItem("token", response.data.token);
+            
+            // FIX 2: Added success message
+            toast.success("Login successful!");
 
-        toast.success("Login successful!");
+            const user = response.data.user;
+            if(user.role == "admin"){
+                navigate("/admin"); // Redirect to the admin page
+            } else {
+                navigate("/"); // Redirect to the home page
+            }
 
-        const user = response.data.user;
-        if(user.role == "admin"){
-            navigate("/admin"); // Redirect to the admin page
-        }else{
-            navigate("/"); // Redirect to the home page
-        }
-        }catch(e){
-            if(e.response.status == 404){
-                alert("User not found")
-                toast.error("Login failed!. Please check your credentials.");
-        }
+        } catch(e) {
+            // FIX 3: Better error handling for different scenarios
+            const status = e.response?.status;
+            if(status == 404){
+                toast.error("User not found");
+            } else if (status == 401) {
+                toast.error("Invalid password");
+            } else {
+                toast.error("Login failed! Please check your connection.");
+            }
         }
     }
 
@@ -244,7 +88,6 @@ export default function LoginPage() {
                         <div className="relative">
                             <input 
                                 onChange={(e)=>{
-                                    console.log("Email changed...")
                                     setEmail(e.target.value)
                                 }} 
                                 type="text" 
@@ -264,7 +107,6 @@ export default function LoginPage() {
                         <div className="relative">
                             <input 
                                 onChange={(e)=>{
-                                    console.log("Password changed")
                                     setPassword(e.target.value)
                                 }} 
                                 type="password"
