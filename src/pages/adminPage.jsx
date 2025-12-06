@@ -4,6 +4,9 @@ import { BsCartPlusFill } from "react-icons/bs";
 import { HiOutlineUsers } from "react-icons/hi2";
 import { AiOutlineProduct } from "react-icons/ai";
 import AdminProductPage from "./admin/adminProductPage";
+import { FaRegTrashAlt } from "react-icons/fa";
+import AddProductPage from "./admin/adminAddNewProduct";
+
 
 
 
@@ -39,6 +42,7 @@ export default function AdminPage() {
                             <Route path="/" element={<h1>Dashboard</h1>}></Route>
                             <Route path="/products" element={<AdminProductPage />}></Route>
                             <Route path="/orders" element={<h1>Orders</h1>}></Route>
+                            <Route path="/add-product" element={<AddProductPage/>}></Route>
                         </Routes>
                     </div>
                 </div>
