@@ -1,101 +1,28 @@
-// import { useState } from "react";
-
-// export default function AddProductPage() {
-
-//     const [productID, setProductID] = useState({});
-//     const [name, setName] = useState({});
-//     const [altNames, setAltNames] = useState({});
-//     const [description, setDescription] = useState({});
-//     const [price, setPrice] = useState({});
-//     const [labelledPrice, setLabelledPrice] = useState({});
-//     const [category, setCategory] = useState({});
-//     const [images, setImages] = useState([]);
-//     const [stock, setStock] = useState(0);
-
-//     return (
-//         <div className="w-full h-full flex justify-center items-center">
-//             <div className="w-[600px] h-[300px] border-accent border-[2px] flex flex-col items-center">
-//                 <input value={productID} onChange={(e) => {setProductID(e.target.value)}} />
-//                 <input value={name} onChange={(e) => {setName(e.target.value)}} />
-//                 <input value={altNames} onChange={(e) => {setAltNames(e.target.value)}} />
-//                 <textarea value={description} onChange={(e) => {setDescription(e.target.value)}} />
-//                 <input type = "number" value={price} onChange={(e) => {setPrice(e.target.value)}} />
-//                 <input type = "number" value={labelledPrice} onChange={(e) => {setLabelledPrice(e.target.value)}} />
-//                 <select value={category} onChange={(e) => {setCategory(e.target.value)}}>
-//                     <option value="cream">Cream</option>
-//                     <option value="lotion">Lotion</option>
-//                     <option value="serum">Serum</option>
-//                 </select>
-//                 <input type="file" onChange={(e) => {setImages(e.target.files)}} multiple/>
-//                 <input value={stock} onChange={(e) => {setStock(e.target.value)}} />
-//             </div>
-//         </div>
-//     )
-
-    //  {
-    //     productID : {
-    //         type : String,
-    //         required : true,
-    //         unique : true
-    //     },
-    //     name : {   
-    //         type : String,
-    //         required : true
-    //     },
-    //     altNames : {
-    //         type : [String],
-    //         required : true
-    //     },
-    //     images : { // <--- Added this
-    //         type : [String],
-    //         default : []
-    //     },
-    //     description : {
-    //         type : String,
-    //         required : true
-    //     },
-    //     price : {
-    //         type : Number,
-    //         required : true
-    //     },
-    //     labelledPrice : {
-    //         type : Number,
-    //         required : true
-    //     },
-    //     category :  {
-    //         type : String,
-    //         required : true
-    //     },
-    //     stock : { // <--- Added this
-    //         type : Number,
-    //         required : true,
-    //         default : 0
-    //     }
-    // },
-
-
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { use, useState } from "react";
+import { useLocation,useNavigate } from "react-router-dom";
 import axios from "axios";
 import mediaUpload from "../../utilities/mediaUpload.jsx";
 import toast from "react-hot-toast";
 
 
-export default function AddProductPage() {
+
+export default function UpdateProductPage() {
     // Corrected initialization to "" (strings) instead of {} (objects) 
     // so the inputs don't display "[object Object]"
-    const [productID, setProductID] = useState("");
-    const [name, setName] = useState("");
-    const [altNames, setAltNames] = useState("");
-    const [description, setDescription] = useState("");
-    const [price, setPrice] = useState("");
-    const [labelledPrice, setLabelledPrice] = useState("");
-    const [category, setCategory] = useState("cream"); // Default to first option
-    const [images, setImages] = useState([]);
-    const [stock, setStock] = useState(0);
+    const location = useLocation();
+
+    const [productID, setProductID] = useState(location.state.productID);
+    const [name, setName] = useState(location.state.name);
+    const [altNames, setAltNames] = useState(location.state.altNames);
+    const [description, setDescription] = useState(location.state.description);
+    const [price, setPrice] = useState(location.state.price);
+    const [labelledPrice, setLabelledPrice] = useState(location.state.labelledPrice);
+    const [category, setCategory] = useState(location.state.category); // Default to first option
+    const [images, setImages] = useState({});
+    const [stock, setStock] = useState(location.state.stock);
     const navigate = useNavigate();
 
-async function addProduct(){
+async function updateProduct(){
         const token = localStorage.getItem("token");
         if(token == null){
             navigate("/login");
@@ -114,7 +41,11 @@ async function addProduct(){
 
         try{
             // 2. Remove 'const' here. Update the outer variable.
-            // urls = await Promise.all(promises); 
+            let urls = await Promise.all(promises);
+
+            if(urls.length === 0){
+                urls = location.state.images;
+            }
             
             // const alternativeNames = altNames.split(",");
 
@@ -138,17 +69,17 @@ async function addProduct(){
             }
 
             // 3. FIX: Add the space after Bearer
-            await axios.post(import.meta.env.VITE_API_URL + "/api/products", product, {
+            await axios.post(import.meta.env.VITE_API_URL + "/api/products"+"/"+productID, product, {
                 headers : {
                     "Authorization" : "Bearer " + token 
                 }
             })
-            toast.success("Product added successfully!");
+            toast.success("Product updated successfully!");
             navigate("/admin/products"); // Optional: Redirect after success
         }catch(error){
             console.log(error) // Log the error to see details
-            const serverMessage = error.response?.data?.message || "Error adding product";
-            toast.error("Error adding product");
+            const serverMessage = error.response?.data?.message || "Error updating product";
+            toast.error("Error updating product");
         }
 
         console.log(urls);
@@ -165,7 +96,7 @@ async function addProduct(){
                 {/* Header Section */}
                 <div className="bg-secondary p-6 text-center">
                     <h2 className="text-3xl font-bold text-primary font-['Playfair_Display'] tracking-wide">
-                        Add New Product
+                        Update New Product
                     </h2>
                     <p className="text-gray-400 text-sm mt-2 font-['Montserrat']">
                         Enter the details to update your inventory
@@ -179,7 +110,8 @@ async function addProduct(){
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="col-span-1">
                             <label className={labelStyle}>Product ID</label>
-                            <input 
+                            <input
+                                disabled
                                 className={inputStyle} 
                                 placeholder="e.g. #SKU-1024"
                                 value={productID} 
@@ -305,8 +237,8 @@ async function addProduct(){
                     <button className="bg-primary text-secondary font-['Montserrat'] font-semibold py-2 px-8 rounded-full hover:bg-red-500 hover:shadow-lg transition-all transform active:scale-95 flex justify-center items-center">
                         Cancel
                     </button>
-                     <button onClick={addProduct} className="bg-accent text-primary font-['Montserrat'] font-semibold py-2 px-8 rounded-full hover:bg-[#e57020] hover:shadow-lg transition-all transform active:scale-95 flex justify-center items-center">
-                        Save Product
+                     <button onClick={updateProduct} className="bg-accent text-primary font-['Montserrat'] font-semibold py-2 px-8 rounded-full hover:bg-[#e57020] hover:shadow-lg transition-all transform active:scale-95 flex justify-center items-center">
+                        Update Product
                     </button>
                 </div>
 

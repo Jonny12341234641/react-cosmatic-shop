@@ -2,6 +2,7 @@ import { useState } from "react";
 const annonkey = "sb_publishable_xzmEbE1WTlbcOr97Xi1Bow_ONuPOKpc";
 const supabaseUrl = "https://mjcnuxxxpomastvyvogi.supabase.co";
 import { createClient } from "@supabase/supabase-js";
+import mediaUpload from "../utilities/mediaUpload";
 
 const supabase = createClient(supabaseUrl, annonkey); 
 
@@ -13,16 +14,18 @@ export default function TestPage() {
     
     const[file, setFile] = useState(null);
 
-    function uploadImage(){
-        supabase.storage.from('images').upload(file.name, file, {
-            upsert: false,
-            cacheControl: '3600',
-        }).then(
-            ()=>{
-                const publicUrl = supabase.storage.from('images').getPublicUrl(file.name);
-                console.log(publicUrl);
-            }
-        )
+    async function uploadImage(){
+        // supabase.storage.from('images').upload(file.name, file, {
+        //     upsert: false,
+        //     cacheControl: '3600',
+        // }).then(
+        //     ()=>{
+        //         const publicUrl = supabase.storage.from('images').getPublicUrl(file.name);
+        //         console.log(publicUrl);
+        //     }
+        // )
+        const link = await mediaUpload(file)
+        console.log(link);
     }
 
     return (

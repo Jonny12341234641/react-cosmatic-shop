@@ -3,6 +3,8 @@ import { useEffect, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { FiEdit3, FiPlusCircle } from "react-icons/fi";
 import { Link } from "react-router-dom";
+import toast from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
 
 const sampleProducts = [
   {
@@ -54,6 +56,7 @@ const sampleProducts = [
 
 export default function AdminProductPage() {
   const [products, setProducts] = useState(sampleProducts);
+  const navigate = useNavigate();
 
   useEffect(() => {
     axios.get(import.meta.env.VITE_API_URL + "/api/products").then((response) => {
@@ -127,7 +130,11 @@ export default function AdminProductPage() {
                       
                       <button 
                         className="p-2 rounded-full hover:bg-orange-50 transition-colors group"
-                        title="Edit"
+                        title="Edit" onClick={()=>{
+                          navigate("/admin/update-product", {
+                            state : item
+                          })
+                        }}
                       >
                         {/* Swapped FaRegEdit (undefined) for FiEdit3 (imported) */}
                         <FiEdit3 className="text-gray-400 group-hover:text-accent text-lg transition-colors" />
