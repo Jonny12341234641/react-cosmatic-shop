@@ -6,7 +6,7 @@ import { Link, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { Loader } from "../../components/loader.jsx";
-import mediaUpload, { getMediaUrl } from "../../utilities/mediaUpload.jsx";
+import mediaUpload from "../../utilities/mediaUpload.jsx";
 
 function ProductDeleteConfirm(props) {
   const productID = props.productID;
@@ -169,7 +169,7 @@ export default function AdminProductPage() {
                     <div className="w-12 h-12 bg-gray-200 rounded-md">
                       {item.images && item.images.length > 0 && (
                         <img
-                          src={getMediaUrl(item.images[0])}
+                          src={item.images[0]}
                           alt={item.name}
                           className="object-cover w-full h-full rounded-md"
                         />
