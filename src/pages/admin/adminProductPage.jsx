@@ -6,6 +6,7 @@ import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { Loader } from "../../components/loader.jsx";
+import mediaUpload, { getMediaUrl } from "../../utilities/mediaUpload.jsx";
 
 function ProductDeleteConfirm(props) {
   const productID = props.productID;
@@ -123,7 +124,7 @@ export default function AdminProductPage() {
             setIsLoading(false);
         });
       }
-  }, []);
+  }, [isLoading]);
 
   return (
     // Applied 'bg-primary' for a warm page background
@@ -160,7 +161,15 @@ export default function AdminProductPage() {
                 >
                   <td className="p-4">
                     {/* Placeholder for image - added a grey box to look like a skeleton loader */}
-                    <div className="w-12 h-12 bg-gray-200 rounded-md"></div>
+                    <div className="w-12 h-12 bg-gray-200 rounded-md">
+                      {item.images && item.images.length > 0 && (
+                        <img
+                          src={getMediaUrl(item.images[0])}
+                          alt={item.name}
+                          className="object-cover w-full h-full rounded-md"
+                        />
+                      )}
+                    </div>
                   </td>
                   
                   <td className="p-4 text-sm font-mono text-gray-500">

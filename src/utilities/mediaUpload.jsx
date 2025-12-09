@@ -16,6 +16,12 @@ const supabase = createClient(supabaseUrl, annonkey)
 //         )
 //     }
 
+    export function getMediaUrl(fileName){
+        if(!fileName) return null;
+        const publicUrl = supabase.storage.from('images').getPublicUrl(fileName);
+        return publicUrl.data.publicUrl;
+    }
+
     export default function mediaUpload(file){
         return new Promise(
             (resolve, reject)=>{
