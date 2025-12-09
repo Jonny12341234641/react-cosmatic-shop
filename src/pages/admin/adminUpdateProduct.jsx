@@ -378,14 +378,18 @@ export default function UpdateProductPage() {
                             <input type="number" className={inputStyle} value={stock} onChange={(e) => setStock(e.target.value)} />
                         </div>
                         <div>
-                            <label className={labelStyle}>Images (Leave empty to keep old)</label>
+                            <label className={labelStyle}>Images</label>
                             <input type="file" className={inputStyle} onChange={(e) => setNewImages(e.target.files)} multiple />
                         </div>
                     </div>
                 </div>
-                <div className="bg-gray-50 px-8 py-4 flex justify-center gap-4">
-                    <button onClick={() => navigate("/admin/products")} className="bg-primary text-secondary py-2 px-8 rounded-full font-semibold">Cancel</button>
-                    <button onClick={updateProduct} className="bg-accent text-primary py-2 px-8 rounded-full font-semibold">Update Product</button>
+                <div className="bg-gray-50 px-8 py-4 flex justify-center items-center-safe gap-2 border-t border-gray-100">
+                    <button onClick={() => navigate("/admin/products")} className="bg-primary text-secondary font-['Montserrat'] font-semibold py-2 px-8 rounded-full hover:bg-red-500 hover:shadow-lg transition-all transform active:scale-95 flex justify-center items-center">
+                        Cancel
+                    </button>
+                     <button onClick={updateProduct} className="bg-accent text-primary font-['Montserrat'] font-semibold py-2 px-8 rounded-full hover:bg-[#e57020] hover:shadow-lg transition-all transform active:scale-95 flex justify-center items-center">
+                        Update Product
+                    </button>
                 </div>
             </div>
         </div>
