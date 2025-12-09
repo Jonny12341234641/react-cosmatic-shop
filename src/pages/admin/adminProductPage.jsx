@@ -2,7 +2,7 @@ import axios from "axios";
 import { useEffect, useState } from "react";
 import { FaRegTrashAlt } from "react-icons/fa";
 import { FiEdit3, FiPlusCircle } from "react-icons/fi";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { Loader } from "../../components/loader.jsx";
@@ -115,6 +115,11 @@ export default function AdminProductPage() {
   const [productToDelete, setproductToDelete] = useState(null)
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    setIsLoading(true);
+  }, [location]);
 
   useEffect(() => {
       if(isLoading){
