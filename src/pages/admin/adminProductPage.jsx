@@ -5,6 +5,60 @@ import { FiEdit3, FiPlusCircle } from "react-icons/fi";
 import { Link } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
+import { Loader } from "../../components/loader.jsx";
+
+function ProductDeleteConfirm(props) {
+  const productID = props.productID;
+  const onclose = props.onclose;   // <--- We use this function to close the popup
+  const refresh = props.refresh;
+  
+  function deleteProduct() {
+    const token = localStorage.getItem("token");
+
+    // FIX 1: Added "/" and fixed the Authorization header quotes
+    axios.delete(import.meta.env.VITE_API_URL + "/api/products/" + productID, {
+      headers: {
+        Authorization: "Bearer " + token  // <--- Double quotes + variable
+      }
+    }).then((response) => {
+      console.log(response.data);
+      toast.success("Product deleted successfully");
+      
+      // FIX 2: Call the prop function to close the window
+      onclose(); 
+      refresh();
+    }).catch((error) => {
+      console.log(error);
+      toast.error("Failed to delete product");
+    });
+  }
+
+  return (
+    <div className="fixed left-0 top-0 w-full h-screen bg-[#00000050] z-[100] flex justify-center items-center">
+      <div className="w-[500px] h-[200px] bg-white relative rounded-2xl shadow-2xl flex flex-col justify-center items-center gap-[10px]">
+        
+        {/* Close Button (Top Right) */}
+        <button onClick={onclose} className="absolute right-[-15px] top-[-15px] w-10 h-10 bg-red-600 hover:bg-red-700 flex justify-center items-center rounded-full text-white font-bold shadow-lg">
+          X
+        </button>
+
+        <p className="text-xl font-semibold text-secondary text-center px-4">
+          Are you sure you want to delete <br/> Product ID: <span className="text-accent">{productID}</span>?
+        </p>
+
+        <div className="flex gap-[20px] mt-4">
+          <button className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold" onClick={deleteProduct}>
+            Yes, Delete
+          </button>
+
+          <button className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 font-semibold" onClick={onclose}>
+            Cancel
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
 
 const sampleProducts = [
   {
@@ -56,25 +110,34 @@ const sampleProducts = [
 
 export default function AdminProductPage() {
   const [products, setProducts] = useState(sampleProducts);
+  const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false);
+  const [productToDelete, setproductToDelete] = useState(null)
+  const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
   useEffect(() => {
-    axios.get(import.meta.env.VITE_API_URL + "/api/products").then((response) => {
-      console.log(response.data);
-      setProducts(response.data);
-    });
+      if(isLoading){
+            axios.get(import.meta.env.VITE_API_URL + "/api/products").then((response) => {
+            console.log(response.data);
+            setProducts(response.data);
+            setIsLoading(false);
+        });
+      }
   }, []);
 
   return (
     // Applied 'bg-primary' for a warm page background
     <div className="w-full h-full min-h-screen bg-primary p-8 font-sans">
+
+      {isDeleteConfirmVisible && <ProductDeleteConfirm refresh={()=>{setIsLoading(true)}} productID={productToDelete} onclose={() => setIsDeleteConfirmVisible(false)}></ProductDeleteConfirm>} {/* Conditional rendering for delete confirmation modal*/}
+
       <Link to="/admin/add-product" className="fixed right-[50px] bottom-[50px] text-5xl hover:text-accent"><FiPlusCircle className="hover:text-accent"/>
       </Link>
       
       {/* Card container with shadow and rounded corners for a modern look */}
       <div className="overflow-hidden rounded-xl shadow-xl bg-white border border-gray-100">
         
-        <table className="w-full text-left border-collapse">
+        {isLoading?<div><Loader></Loader></div>:<table className="w-full text-left border-collapse">
           <thead>
             {/* Applied 'bg-secondary' for high contrast header */}
             <tr className="bg-secondary text-white text-sm uppercase tracking-wider">
@@ -123,8 +186,11 @@ export default function AdminProductPage() {
                     <div className="flex flex-row gap-4 justify-center items-center">
                       <button 
                         className="p-2 rounded-full hover:bg-red-50 transition-colors group"
-                        title="Delete"
-                      >
+                        title="Delete" onClick={()=>{
+                          setproductToDelete(item.productID);
+                          setIsDeleteConfirmVisible(true);
+
+                        }}>
                         <FaRegTrashAlt className="text-gray-400 group-hover:text-red-600 text-lg transition-colors" />
                       </button>
                       
@@ -145,7 +211,7 @@ export default function AdminProductPage() {
               );
             })}
           </tbody>
-        </table>
+        </table>}
       </div>
     </div>
   );
