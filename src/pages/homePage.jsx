@@ -30,6 +30,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import toast from "react-hot-toast";
 import { Loader } from "../components/loader.jsx";
+import ProductOverview from "./productOverview.jsx";
 
 // --- SUB-COMPONENT: The Main Landing Page Content ---
 function HomeContent() {
@@ -131,6 +132,7 @@ function HomeContent() {
               trendingProducts.map((product) => (
                 <ProductCard
                   key={product.productID}
+                  id={product.productID}
                   name={product.name}
                   price={product.price}
                   img={product.images && product.images.length > 0 ? product.images[0] : "https://via.placeholder.com/300"}
@@ -209,6 +211,7 @@ export default function HomePage() {
                     <Route path="/about" element={<AboutPage></AboutPage>} />
                     <Route path="/contact" element={<ContactPage></ContactPage>} />
                     <Route path="/*" element={<h1 className="text-center pt-20 text-3xl">404 Not Found</h1>} />
+                    <Route path="/overview/:id" element={<ProductOverview></ProductOverview>} />
             </Routes>
         </div>
     )

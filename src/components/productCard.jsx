@@ -1,8 +1,10 @@
 import { FiShoppingCart } from "react-icons/fi";
+import { Link } from "react-router-dom";
+
 
 export default function ProductCard(props) {
   // Use default values for props to prevent errors if they are not provided
-  const { name = "Product Name", price = "0.00", img = "https://via.placeholder.com/300" } = props;
+  const { id, name = "Product Name", price = "0.00", img = "https://via.placeholder.com/300" } = props;
 
   return (
     <div className="group relative w-full max-w-sm bg-white rounded-2xl shadow-lg overflow-hidden transform hover:-translate-y-2 transition-all duration-300 ease-in-out font-['Montserrat']">
@@ -27,10 +29,10 @@ export default function ProductCard(props) {
             ${price}
           </p>
           
-          <button className="flex items-center gap-2 bg-secondary text-white px-5 py-2.5 rounded-full shadow-md hover:bg-accent hover:shadow-lg transition-all duration-300 transform active:scale-95">
+          <Link to={"/overview/" + id} className="flex items-center gap-2 bg-secondary text-white px-5 py-2.5 rounded-full shadow-md hover:bg-accent hover:shadow-lg transition-all duration-300 transform active:scale-95">
             <FiShoppingCart />
-            <span>Add</span>
-          </button>
+            <span>View Product</span>
+          </Link>
         </div>
       </div>
     </div>
