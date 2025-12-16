@@ -37,15 +37,27 @@
 
 // Above is the previous code. Below is the updated code.
 
-import React from "react";
-import { loadCart } from "../utilities/cart.js";
+import React, { useEffect, useState } from "react";
+import { addToCart, getTotal, loadCart } from "../utilities/cart.js";
 import { CiCircleChevDown } from "react-icons/ci";
 import { CiCircleChevUp } from "react-icons/ci";
+import { BiTrash } from "react-icons/bi";
 
 export default function cartPage() {
     
     // Logic remains unchanged
-    const cart = loadCart();
+    const [cart, setCart] = React.useState(loadCart());
+
+    // const [cartLoaded, setCartLoaded] = React.useState(false);
+
+    // useEffect(() => {
+    //     if (!cartLoaded) {
+    //         setCart(loadCart());
+    //         setCartLoaded(true);
+    //     }
+    // }, [cartLoaded]);
+
+
 
     return (
         // Changed: Main container uses 'bg-primary' (cream) from your theme. 
@@ -72,12 +84,12 @@ export default function cartPage() {
                 - 'shadow-xl rounded-2xl': Adds depth and elegance (modern card style).
                 - 'overflow-hidden': Ensures children don't break the rounded corners.
             */}
-            <div className="w-full max-w-3xl bg-white shadow-xl rounded-2xl overflow-hidden flex flex-col">
+            <div className="w-full max-w-3xl bg-white shadow-xl rounded-2xl flex flex-col overflow-hidden">
                 
                 {/* Changed: Added a scrolling container for the list itself 
                     if the cart gets too long, keeping the page tidy.
                 */}
-                <div className="flex flex-col overflow-y-auto max-h-[600px] divide-y divide-gray-100">
+                <div className="flex flex-col overflow-y-auto h-full max-h-[600px] divide-y divide-gray-100">
                     {
                         cart.map((item, index) => {
                             return (
@@ -85,7 +97,17 @@ export default function cartPage() {
                                 // - Removed fixed height (h-[120px]) to allow content to fit naturally.
                                 // - Added 'p-6' for spacious internal padding.
                                 // - 'hover:bg-gray-50': Adds a subtle interaction effect.
-                                <div key={index} className="w-full flex items-center p-6 gap-6 hover:bg-gray-50 transition-colors">
+                                <div key={index} className="w-full flex items-center p-6 gap-6 hover:bg-gray-50 transition-colors relative items-center justify-center">
+
+                                    <button className="absolute top-2 right-2 text-red-500 font-bold right-[-50px] text-2xl rounded-full aspect-square hover:bg-red-500 p-[5px] transition hover:text-white hover:scale-110"
+                                        onClick={
+                                            () => {
+                                                addToCart(item, -item.quantity);
+                                                setCart(loadCart());
+                                            }}>
+                                        <BiTrash></BiTrash>
+                                    </button>
+
                                     
                                     {/* FIXED IMAGE ISSUE:
                                         - Added 'w-24 h-24' (96px): Explicit size ensures the image never collapses to 0 width.
@@ -122,6 +144,12 @@ export default function cartPage() {
                                         <CiCircleChevUp 
                                             className="text-3xl text-accent cursor-pointer hover:text-orange-600 transition-transform active:scale-90"
                                             title="Increase quantity"
+                                            onClick={
+                                                () => {
+                                                    addToCart(item, 1);
+                                                    setCart(loadCart());
+                                                    }
+                                                }
                                         />
                                         
                                         <span className="text-lg font-bold text-secondary tabular-nums">
@@ -131,6 +159,12 @@ export default function cartPage() {
                                         <CiCircleChevDown 
                                             className="text-3xl text-accent cursor-pointer hover:text-orange-600 transition-transform active:scale-90"
                                             title="Decrease quantity"
+                                            onClick={
+                                                () => {
+                                                    addToCart(item, -1);
+                                                    setCart(loadCart());
+                                                    }
+                                                }
                                         />
                                     </div>
 
@@ -139,12 +173,17 @@ export default function cartPage() {
                                             item.labelledPrice>item.price&&
                                             <span className="text-secondary text-lg text-right pr-[10px] mt-[20px] line-through">LKR: {item.labelledPrice.toFixed(2)}</span>
                                         }
-                                        <span className="text-accent text-2xl font-bold text-right pr-[10px] mt-2 flex">LKR: {item.price.toFixed(2)}</span>
+                                        <span className="text-accent text-2xl font-semibold text-right pr-[10px] mt-2 flex">LKR: {item.price.toFixed(2)}</span>
                                     </div>
                                 </div>
                             )
                         })
                     }
+                    <div className="w-full flex items-center p-6 gap-6 hover:bg-gray-50 transition-colors flex justify-end items-center">
+                        <div className="h-[50px]">
+                            <span className="w-full text-accent text-2xl font-semibold text-right pr-[10px] mt-2 flex">Total: LKR {getTotal().toFixed(2)}</span>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
