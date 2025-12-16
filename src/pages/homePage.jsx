@@ -31,6 +31,7 @@ import axios from "axios";
 import toast from "react-hot-toast";
 import { Loader } from "../components/loader.jsx";
 import ProductOverview from "./productOverview.jsx";
+import CartPage from "./cart.jsx";
 
 // --- SUB-COMPONENT: The Main Landing Page Content ---
 function HomeContent() {
@@ -212,6 +213,7 @@ export default function HomePage() {
                     <Route path="/contact" element={<ContactPage></ContactPage>} />
                     <Route path="/*" element={<h1 className="text-center pt-20 text-3xl">404 Not Found</h1>} />
                     <Route path="/overview/:id" element={<ProductOverview></ProductOverview>} />
+                    <Route path="/cart" element={<CartPage></CartPage>} />
             </Routes>
         </div>
     )

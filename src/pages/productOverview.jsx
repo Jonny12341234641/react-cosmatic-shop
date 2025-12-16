@@ -4,6 +4,8 @@ import toast from "react-hot-toast";
 import { useParams } from "react-router-dom";
 import { Loader } from "../components/loader";
 import ImageSlider from "../components/imageSlider";
+import { loadCart, addToCart } from "../utilities/cart";
+
 
 export default function ProductOverview() {
 
@@ -38,8 +40,53 @@ export default function ProductOverview() {
                             </ImageSlider>
                         </div>
                         <div className="w-[50%] h-full flex flex-col items-center gap-4 p-10 ">
-                            <h1 className="text-2xl font-['Playfair_Display'] font-bold">{product.name}</h1>
-</div>
+                            <span className="">{product.productID}</span>
+                            <h1 className="text-2xl font-['Playfair_Display'] font-bold text-center">{product.name}
+                                {
+                                    product.altNames.map(
+                                        (altName, index) => {
+                                            return (
+                                                <span key={index} className="text-sm font-['Playfair_Display'] font-normal">  {" | " + altName} </span>
+                                            )
+                                        }
+                                    )
+                                }
+                            </h1>
+                            {/*product description*/}
+                            <p className="mt-[30px] text-lg font-['Montserrat'] text-justify">{product.description}</p>
+                            {/*product category*/}
+                            <span className="mt-auto text-md font-['Montserrat']">Category: {product.category}</span>
+                            {/*product price*/}
+                            {
+                                product.labelledPrice>product.price ?
+                                <div className="flex items-center gap-4">
+                                    <span className="text-3xl font-['Playfair_Display'] font-bold text-accent">${product.labelledPrice.toFixed(2)}</span>
+                                    <span className="text-xl font-['Montserrat'] line-through text-gray-500">${product.price.toFixed(2)}</span>
+                                </div>
+                                :
+                                <span className="text-3xl font-['Playfair_Display'] font-bold text-accent">${product.price.toFixed(2)}</span>
+                            }
+
+                            <div className="w-full h-[40px] flex gap-4">
+                                {/*add a hover effect to the add to cart button*/}
+                                <button 
+                                    onClick={() => {
+                                        console.log(loadCart(product));
+                                        addToCart(product, 1);
+                                        toast.success("Added " + product.name + " to cart");
+                                    }}
+                                    className="w-full h-full bg-accent text-white font-['Montserrat'] font-bold rounded hover:bg-transparent hover:border-2 hover:border-dark transition hover:text-black">Add to Cart
+                                </button>
+                                <button 
+                                    onClick={() => {
+                                        console.log(loadCart(product));
+                                        toast.success("Buying " + product.name);
+                                    }}
+                                    className="w-full h-full border-2 border-accent text-accent font-['Montserrat'] font-bold rounded hover:bg-accent hover:text-white transition">Buy Now
+                                </button>
+                            </div>
+
+                        </div>
                     </div>
                 )
             }

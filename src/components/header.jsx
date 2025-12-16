@@ -29,6 +29,7 @@
 
 import { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
+import { FiShoppingCart } from "react-icons/fi";
 
 export default function Header() {
   return (
@@ -87,6 +88,11 @@ export default function Header() {
             Contact
           </Link>
         </div>
+
+        <Link to="/cart" className="text-2xl text-secondary hover:text-accent transition-colors duration-300 absolute right-6 top-5 bottom-5 flex items-center">
+          <FiShoppingCart></FiShoppingCart>
+        </Link>
+
       </div>
     </header>
   );
