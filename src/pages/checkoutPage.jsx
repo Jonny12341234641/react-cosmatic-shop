@@ -38,16 +38,35 @@
 // Above is the previous code. Below is the updated code.
 
 import React, { useEffect, useState } from "react";
-import { addToCart, getTotal, loadCart } from "../utilities/cart.js";
+// import { addToCart, getTotal, loadCart } from "../utilities/cart.js";
 import { CiCircleChevDown } from "react-icons/ci";
 import { CiCircleChevUp } from "react-icons/ci";
 import { BiTrash } from "react-icons/bi";
 import { Link } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 
-export default function cartPage() {
+
+export default function checkoutPage() {
+
+    const location = useLocation();
     
-    // Logic remains unchanged
-    const [cart, setCart] = React.useState(loadCart());
+    // Fallback to loadCart() if state is null, or an empty array as a last resort
+    const [cart, setCart] = React.useState(location.state || loadCart() || []);
+
+/**
+ * Returns the total cost of all items in the cart.
+ * This function iterates through each item in the cart,
+ * multiplies the price of the item by its quantity, and
+ * adds up all these values to get the total cost.
+ * @returns {number} - The total cost of all items in the cart.
+ */
+    function getTotal() {
+        let total = 0;
+        cart.forEach((item) => {
+            total += item.price * item.quantity;
+        });
+        return total;
+    }
 
     // const [cartLoaded, setCartLoaded] = React.useState(false);
 
@@ -75,7 +94,7 @@ export default function cartPage() {
             <div className="text-center mb-8">
                 <h1 className="font-serif text-4xl md:text-5xl">
                     <span className="font-bold text-secondary">Your </span>
-                    <span className="italic font-bold text-accent">Shopping Cart</span>
+                    <span className="italic font-bold text-accent">Checkout</span>
                 </h1>
             </div>
 
@@ -103,8 +122,7 @@ export default function cartPage() {
                                     <button className="absolute top-2 right-2 text-red-500 font-bold right-[-50px] text-2xl rounded-full aspect-square hover:bg-red-500 p-[5px] transition hover:text-white hover:scale-110"
                                         onClick={
                                             () => {
-                                                addToCart(item, -item.quantity);
-                                                setCart(loadCart());
+
                                             }}>
                                         <BiTrash></BiTrash>
                                     </button>
@@ -147,8 +165,9 @@ export default function cartPage() {
                                             title="Increase quantity"
                                             onClick={
                                                 () => {
-                                                    addToCart(item, 1);
-                                                    setCart(loadCart());
+                                                        const newCart = [...cart];
+                                                        newCart[index].quantity += 1;
+                                                        setCart(newCart);
                                                     }
                                                 }
                                         />
@@ -162,8 +181,11 @@ export default function cartPage() {
                                             title="Decrease quantity"
                                             onClick={
                                                 () => {
-                                                    addToCart(item, -1);
-                                                    setCart(loadCart());
+                                                        const newCart = [...cart];
+                                                        if (newCart[index].quantity > 1) {
+                                                        newCart[index].quantity -= 1;
+                                                        setCart(newCart);
+                                                        }
                                                     }
                                                 }
                                         />
@@ -181,9 +203,9 @@ export default function cartPage() {
                         })
                     }
                     <div className="w-full flex items-center p-6 gap-6 hover:bg-gray-50 transition-colors flex justify-end items-center relative">
-                        <Link state={cart} to="/checkout" className="absolute left-6 bg-accent text-white font-semibold hover:bg-orange-600 px-4 py-2 rounded-full">
-                            Proceed to Checkout
-                        </Link>
+                        <button to="/checkout" className="absolute left-6 bg-accent text-white font-semibold hover:bg-orange-600 px-4 py-2 rounded-full">
+                            Order
+                        </button>
                         <div className="h-[50px]">
                             <span className="w-full text-accent text-2xl font-semibold text-right pr-[10px] mt-2 flex justify-end items-center">Total: LKR {getTotal().toFixed(2)}</span>
                         </div>
