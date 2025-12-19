@@ -6,26 +6,53 @@ import { Link, useLocation } from "react-router-dom";
 import toast from "react-hot-toast";
 import { useNavigate } from "react-router-dom";
 import { Loader } from "../../components/loader.jsx";
-import mediaUpload from "../../utilities/mediaUpload.jsx";
 
+/**
+ * ProductDeleteConfirm Component
+ * =============================================================================
+ * A modal overlay component that prompts the user for confirmation before 
+ * deleting a specific product.
+ * * Props:
+ * - productID: The unique identifier of the product to be deleted.
+ * - onclose: Callback function to close the modal.
+ * - refresh: Callback function to refresh the parent list after deletion.
+ * =============================================================================
+ */
 function ProductDeleteConfirm(props) {
+  
   const productID = props.productID;
-  const onclose = props.onclose;   // <--- We use this function to close the popup
+  const onclose = props.onclose;   
   const refresh = props.refresh;
   
+  /**
+   * deleteProduct Function
+   * ---------------------------------------------------------------------------
+   * Handles the asynchronous deletion of a product.
+   * * Steps:
+   * 1. Retrieves the authentication token from local storage.
+   * 2. Sends a DELETE request to the backend API targeting the specific product ID.
+   * 3. Includes the Bearer token in the request headers for authorization.
+   * 4. On Success:
+   * - Logs the response.
+   * - Displays a success toast notification.
+   * - Closes the modal using the 'onclose' prop.
+   * - Refreshes the product list using the 'refresh' prop.
+   * 5. On Failure:
+   * - Logs the error.
+   * - Displays an error toast notification.
+   * ---------------------------------------------------------------------------
+   */
   function deleteProduct() {
     const token = localStorage.getItem("token");
 
-    // FIX 1: Added "/" and fixed the Authorization header quotes
     axios.delete(import.meta.env.VITE_API_URL + "/api/products/" + productID, {
       headers: {
-        Authorization: "Bearer " + token  // <--- Double quotes + variable
+        Authorization: "Bearer " + token 
       }
     }).then((response) => {
       console.log(response.data);
       toast.success("Product deleted successfully");
       
-      // FIX 2: Call the prop function to close the window
       onclose(); 
       refresh();
     }).catch((error) => {
@@ -36,23 +63,36 @@ function ProductDeleteConfirm(props) {
 
   return (
     <div className="fixed left-0 top-0 w-full h-screen bg-[#00000050] z-[100] flex justify-center items-center">
+      
+      {/* Modal Container */}
       <div className="w-[500px] h-[200px] bg-white relative rounded-2xl shadow-2xl flex flex-col justify-center items-center gap-[10px]">
         
         {/* Close Button (Top Right) */}
-        <button onClick={onclose} className="absolute right-[-15px] top-[-15px] w-10 h-10 bg-red-600 hover:bg-red-700 flex justify-center items-center rounded-full text-white font-bold shadow-lg">
+        <button 
+          onClick={onclose} 
+          className="absolute right-[-15px] top-[-15px] w-10 h-10 bg-red-600 hover:bg-red-700 flex justify-center items-center rounded-full text-white font-bold shadow-lg"
+        >
           X
         </button>
 
+        {/* Confirmation Message */}
         <p className="text-xl font-semibold text-secondary text-center px-4">
           Are you sure you want to delete <br/> Product ID: <span className="text-accent">{productID}</span>?
         </p>
 
+        {/* Action Buttons */}
         <div className="flex gap-[20px] mt-4">
-          <button className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold" onClick={deleteProduct}>
+          <button 
+            className="px-6 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-semibold" 
+            onClick={deleteProduct}
+          >
             Yes, Delete
           </button>
 
-          <button className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 font-semibold" onClick={onclose}>
+          <button 
+            className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 font-semibold" 
+            onClick={onclose}
+          >
             Cancel
           </button>
         </div>
@@ -61,6 +101,7 @@ function ProductDeleteConfirm(props) {
   );
 }
 
+// Sample data used for initial state initialization
 const sampleProducts = [
   {
     productID: "ELEC-001",
@@ -109,123 +150,187 @@ const sampleProducts = [
   },
 ];
 
+/**
+ * AdminProductPage Component
+ * =============================================================================
+ * The main dashboard view for administrators to manage the product inventory.
+ * * Functional Overview:
+ * 1. Fetches product data from the API on mount or refresh.
+ * 2. Displays a table of products with images, details, and pricing.
+ * 3. Provides controls to Add, Edit, and Delete products.
+ * 4. Manages the visibility of the deletion confirmation modal.
+ * =============================================================================
+ */
 export default function AdminProductPage() {
+  
+  // State Management
   const [products, setProducts] = useState(sampleProducts);
   const [isDeleteConfirmVisible, setIsDeleteConfirmVisible] = useState(false);
   const [productToDelete, setproductToDelete] = useState(null)
   const [isLoading, setIsLoading] = useState(true);
+  
+  // Navigation Hooks
   const navigate = useNavigate();
   const location = useLocation();
 
+  /**
+   * Effect: Location Change Listener
+   * ---------------------------------------------------------------------------
+   * Resets the loading state to true whenever the user navigates.
+   * This triggers the data fetching effect below.
+   */
   useEffect(() => {
     setIsLoading(true);
   }, [location]);
 
+  /**
+   * Effect: Data Fetching
+   * ---------------------------------------------------------------------------
+   * Fetches the product list from the API when 'isLoading' is true.
+   * * Steps:
+   * 1. Check if 'isLoading' is true.
+   * 2. Send GET request to products API.
+   * 3. Update 'products' state with response data.
+   * 4. Set 'isLoading' to false to stop the loader and render the table.
+   */
   useEffect(() => {
-      if(isLoading){
-            axios.get(import.meta.env.VITE_API_URL + "/api/products").then((response) => {
-            console.log(response.data);
-            setProducts(response.data);
-            setIsLoading(false);
-        });
-      }
+    if(isLoading){
+      axios.get(import.meta.env.VITE_API_URL + "/api/products").then((response) => {
+        console.log(response.data);
+        setProducts(response.data);
+        setIsLoading(false);
+      });
+    }
   }, [isLoading]);
 
   return (
-    // Applied 'bg-primary' for a warm page background
+    // Main Page Container: Full screen height with primary background
     <div className="w-full h-full min-h-screen bg-primary p-8 font-sans">
 
-      {isDeleteConfirmVisible && <ProductDeleteConfirm refresh={()=>{setIsLoading(true)}} productID={productToDelete} onclose={() => setIsDeleteConfirmVisible(false)}></ProductDeleteConfirm>} {/* Conditional rendering for delete confirmation modal*/}
+      {/* Conditional Rendering: Product Deletion Modal 
+          If 'isDeleteConfirmVisible' is true, show the modal.
+          Passes the specific 'productToDelete' ID and logic to refresh the page/close modal.
+      */}
+      {isDeleteConfirmVisible && (
+        <ProductDeleteConfirm 
+          refresh={() => { setIsLoading(true) }} 
+          productID={productToDelete} 
+          onclose={() => setIsDeleteConfirmVisible(false)} 
+        />
+      )}
 
-      <Link to="/admin/add-product" className="fixed right-[50px] bottom-[50px] text-5xl hover:text-accent"><FiPlusCircle className="hover:text-accent"/>
+      {/* Floating Action Button (FAB): Link to Add Product Page */}
+      <Link 
+        to="/admin/add-product" 
+        className="fixed right-[50px] bottom-[50px] text-5xl hover:text-accent"
+      >
+        <FiPlusCircle className="hover:text-accent"/>
       </Link>
       
-      {/* Card container with shadow and rounded corners for a modern look */}
+      {/* Table Container: White card with shadow */}
       <div className="overflow-hidden rounded-xl shadow-xl bg-white border border-gray-100">
         
-        {isLoading?<div><Loader></Loader></div>:<table className="w-full text-left border-collapse">
-          <thead>
-            {/* Applied 'bg-secondary' for high contrast header */}
-            <tr className="bg-secondary text-white text-sm uppercase tracking-wider">
-              <th className="p-4 font-semibold">Image</th>
-              <th className="p-4 font-semibold">Product ID</th>
-              <th className="p-4 font-semibold">Name</th>
-              <th className="p-4 font-semibold">Price</th>
-              <th className="p-4 font-semibold">Category</th>
-              <th className="p-4 font-semibold text-center">Actions</th>
-            </tr>
-          </thead>
-          
-          <tbody className="text-gray-700">
-            {products.map((item, index) => {
-              return (
-                <tr
-                  key={item.productID}
-                  // Hover effect uses a very light opacity of the secondary/accent colors
-                  className="border-b border-gray-100 hover:bg-orange-50 transition duration-150 ease-in-out"
-                >
-                  <td className="p-4">
-                    {/* Placeholder for image - added a grey box to look like a skeleton loader */}
-                    <div className="w-12 h-12 bg-gray-200 rounded-md">
-                      {item.images && item.images.length > 0 && (
-                        <img
-                          src={item.images[0]}
-                          alt={item.name}
-                          className="object-cover w-full h-full rounded-md"
-                        />
-                      )}
-                    </div>
-                  </td>
-                  
-                  <td className="p-4 text-sm font-mono text-gray-500">
-                    {item.productID}
-                  </td>
-                  
-                  <td className="p-4 font-medium text-secondary">
-                    {item.name}
-                  </td>
-                  
-                  {/* Applied 'text-accent' to emphasize the price */}
-                  <td className="p-4 text-accent font-bold">
-                    ${item.price}
-                  </td>
-                  
-                  <td className="p-4">
-                    <span className="px-3 py-1 text-xs font-semibold bg-primary text-secondary rounded-full border border-orange-100">
-                      {item.category}
-                    </span>
-                  </td>
-                  
-                  <td className="p-4">
-                    <div className="flex flex-row gap-4 justify-center items-center">
-                      <button 
-                        className="p-2 rounded-full hover:bg-red-50 transition-colors group"
-                        title="Delete" onClick={()=>{
-                          setproductToDelete(item.productID);
-                          setIsDeleteConfirmVisible(true);
-
-                        }}>
-                        <FaRegTrashAlt className="text-gray-400 group-hover:text-red-600 text-lg transition-colors" />
-                      </button>
-                      
-                      <button 
-                        className="p-2 rounded-full hover:bg-orange-50 transition-colors group"
-                        title="Edit" onClick={()=>{
-                          navigate("/admin/update-product", {
-                            state : item
-                          })
-                        }}
-                      >
-                        {/* Swapped FaRegEdit (undefined) for FiEdit3 (imported) */}
-                        <FiEdit3 className="text-gray-400 group-hover:text-accent text-lg transition-colors" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              );
-            })}
-          </tbody>
-        </table>}
+        {/* Loading State: Show Loader if fetching, otherwise show Table */}
+        {isLoading ? (
+          <div>
+            <Loader />
+          </div>
+        ) : (
+          <table className="w-full text-left border-collapse">
+            <thead>
+              {/* Table Header: Secondary color background */}
+              <tr className="bg-secondary text-white text-sm uppercase tracking-wider">
+                <th className="p-4 font-semibold">Image</th>
+                <th className="p-4 font-semibold">Product ID</th>
+                <th className="p-4 font-semibold">Name</th>
+                <th className="p-4 font-semibold">Price</th>
+                <th className="p-4 font-semibold">Category</th>
+                <th className="p-4 font-semibold text-center">Actions</th>
+              </tr>
+            </thead>
+            
+            <tbody className="text-gray-700">
+              {/* Map through products array to render rows */}
+              {products.map((item, index) => {
+                return (
+                  <tr
+                    key={item.productID}
+                    // Row Styling: Hover effect with light accent color
+                    className="border-b border-gray-100 hover:bg-orange-50 transition duration-150 ease-in-out"
+                  >
+                    
+                    {/* Column 1: Image */}
+                    <td className="p-4">
+                      {/* Image container acting as skeleton placeholder */}
+                      <div className="w-12 h-12 bg-gray-200 rounded-md">
+                        {item.images && item.images.length > 0 && (
+                          <img
+                            src={item.images[0]}
+                            alt={item.name}
+                            className="object-cover w-full h-full rounded-md"
+                          />
+                        )}
+                      </div>
+                    </td>
+                    
+                    {/* Column 2: Product ID */}
+                    <td className="p-4 text-sm font-mono text-gray-500">
+                      {item.productID}
+                    </td>
+                    
+                    {/* Column 3: Name */}
+                    <td className="p-4 font-medium text-secondary">
+                      {item.name}
+                    </td>
+                    
+                    {/* Column 4: Price */}
+                    <td className="p-4 text-accent font-bold">
+                      ${item.price}
+                    </td>
+                    
+                    {/* Column 5: Category Badge */}
+                    <td className="p-4">
+                      <span className="px-3 py-1 text-xs font-semibold bg-primary text-secondary rounded-full border border-orange-100">
+                        {item.category}
+                      </span>
+                    </td>
+                    
+                    {/* Column 6: Action Buttons (Delete / Edit) */}
+                    <td className="p-4">
+                      <div className="flex flex-row gap-4 justify-center items-center">
+                        
+                        {/* Delete Button */}
+                        <button 
+                          className="p-2 rounded-full hover:bg-red-50 transition-colors group"
+                          title="Delete" 
+                          onClick={() => {
+                            setproductToDelete(item.productID);
+                            setIsDeleteConfirmVisible(true);
+                          }}
+                        >
+                          <FaRegTrashAlt className="text-gray-400 group-hover:text-red-600 text-lg transition-colors" />
+                        </button>
+                        
+                        {/* Edit Button: Navigates to update page with product state */}
+                        <button 
+                          className="p-2 rounded-full hover:bg-orange-50 transition-colors group"
+                          title="Edit" 
+                          onClick={() => {
+                            navigate("/admin/update-product", {
+                              state : item
+                            })
+                          }}
+                        >
+                          <FiEdit3 className="text-gray-400 group-hover:text-accent text-lg transition-colors" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                );
+              })}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );

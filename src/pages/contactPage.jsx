@@ -1,12 +1,27 @@
 import { useState } from "react";
-import { FiMapPin, FiPhone, FiMail, FiSend } from "react-icons/fi"; // Ensure react-icons is installed
+import { FiMapPin, FiPhone, FiMail, FiSend } from "react-icons/fi"; 
 import toast from "react-hot-toast";
 
+/**
+ * ContactPage Component
+ * =============================================================================
+ * The main contact interface for the application.
+ * * Functional Overview:
+ * 1. Layout: Features a vertical stack containing a header, information cards, 
+ * and a split-screen contact form section.
+ * 2. Visuals: Uses responsive grids and flexbox to adapt from mobile to desktop.
+ * 3. Interaction: Integrates a functional form with state management and user feedback.
+ * =============================================================================
+ */
 export default function ContactPage() {
   return (
+    // Main Container: Full viewport height with padding for spacing
     <div className="w-full min-h-screen bg-primary px-4 md:px-12 py-12 pb-24">
       
-      {/* 1. HEADER SECTION */}
+      {/* Section 1: Page Header 
+        ----------------------
+        Centers the branding message and introduction text.
+      */}
       <div className="text-center max-w-2xl mx-auto mb-16">
         <span className="text-accent font-bold tracking-widest uppercase text-sm">
             Get in Touch
@@ -20,7 +35,10 @@ export default function ContactPage() {
         </p>
       </div>
 
-      {/* 2. CONTACT INFO CARDS */}
+      {/* Section 2: Contact Information Grid
+        -----------------------------------
+        Displays contact methods (Email, Phone, Address) in a responsive 3-column grid.
+      */}
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8 max-w-6xl mx-auto mb-20">
         <ContactCard 
             icon={<FiMail />} 
@@ -42,16 +60,22 @@ export default function ContactPage() {
         />
       </div>
 
-      {/* 3. THE FORM SECTION */}
+      {/* Section 3: Contact Form Container
+        ---------------------------------
+        A card-style container with a split layout:
+        - Left: Decorative image and store invitation.
+        - Right: Interactive form component.
+      */}
       <div className="w-full max-w-6xl mx-auto bg-white rounded-[2rem] shadow-xl shadow-gray-200 overflow-hidden flex flex-col md:flex-row min-h-[600px]">
         
-        {/* Left Side: Visual/Image */}
+        {/* Visual Side (Left) */}
         <div className="w-full md:w-5/12 relative bg-secondary">
             <img 
                 src="https://images.unsplash.com/photo-1596462502278-27bfdd403cc2?q=80&w=1000&auto=format&fit=crop" 
                 alt="Contact Visual" 
                 className="w-full h-full object-cover opacity-80"
             />
+            {/* Gradient Overlay for Text Readability */}
             <div className="absolute inset-0 bg-gradient-to-t from-secondary/90 to-transparent flex flex-col justify-end p-12">
                 <h3 className="text-white text-3xl font-['Playfair_Display'] font-bold mb-4">
                     Visit our Flagship Store
@@ -62,7 +86,7 @@ export default function ContactPage() {
             </div>
         </div>
 
-        {/* Right Side: The Form */}
+        {/* Form Side (Right) */}
         <div className="w-full md:w-7/12 p-8 md:p-16 flex flex-col justify-center">
             <ContactForm />
         </div>
@@ -72,13 +96,29 @@ export default function ContactPage() {
   );
 }
 
-// --- SUB-COMPONENT: Contact Info Card ---
+// =============================================================================
+// SUB-COMPONENTS
+// =============================================================================
+
+/**
+ * ContactCard Component
+ * -----------------------------------------------------------------------------
+ * Renders a single contact method with an icon, title, main detail, and subtitle.
+ * Features hover effects for interactivity.
+ * * @param {ReactNode} icon - The icon to display.
+ * @param {string} title - The method title (e.g., "Email Us").
+ * @param {string} detail - The primary contact info (e.g., email address).
+ * @param {string} sub - Secondary information (e.g., availability).
+ */
 function ContactCard({ icon, title, detail, sub }) {
     return (
         <div className="bg-white p-8 rounded-3xl shadow-lg hover:shadow-2xl hover:-translate-y-2 transition-all duration-300 group text-center border border-transparent hover:border-accent/20">
+            {/* Icon Circle */}
             <div className="w-16 h-16 mx-auto bg-primary rounded-full flex items-center justify-center text-accent text-2xl mb-6 group-hover:bg-accent group-hover:text-white transition-colors duration-300">
                 {icon}
             </div>
+            
+            {/* Content Info */}
             <h3 className="text-xl font-bold text-secondary font-['Playfair_Display'] mb-2">
                 {title}
             </h3>
@@ -88,19 +128,35 @@ function ContactCard({ icon, title, detail, sub }) {
     )
 }
 
-// --- SUB-COMPONENT: The Interactive Form ---
+/**
+ * ContactForm Component
+ * -----------------------------------------------------------------------------
+ * Handles user input and form submission logic.
+ * Manages local state for form fields.
+ */
 function ContactForm() {
+    
+    // State Initialization
     const [formData, setFormData] = useState({ name: "", email: "", message: "" });
 
+    /**
+     * Form Submission Handler
+     * -----------------------
+     * 1. Prevents default browser reload behavior.
+     * 2. Logs form data (placeholder for API call).
+     * 3. Displays success notification via toast.
+     * 4. Resets the form fields to their initial state.
+     */
     function handleSubmit(e) {
         e.preventDefault();
-        // Here you would typically send data to backend
+        
+        // Step 1: Backend Integration Point
         console.log(formData);
         
-        // Show success message
+        // Step 2: User Feedback
         toast.success("Message sent successfully!");
         
-        // Reset form
+        // Step 3: State Cleanup
         setFormData({ name: "", email: "", message: "" });
     }
 
@@ -108,6 +164,7 @@ function ContactForm() {
         <form onSubmit={handleSubmit} className="space-y-6">
             <h2 className="text-3xl font-['Playfair_Display'] font-bold text-secondary mb-6">Send us a message</h2>
             
+            {/* Input Field: Full Name */}
             <div className="space-y-1">
                 <label className="text-sm font-bold text-secondary font-['Montserrat']">Full Name</label>
                 <input 
@@ -120,6 +177,7 @@ function ContactForm() {
                 />
             </div>
 
+            {/* Input Field: Email */}
             <div className="space-y-1">
                 <label className="text-sm font-bold text-secondary font-['Montserrat']">Email Address</label>
                 <input 
@@ -132,6 +190,7 @@ function ContactForm() {
                 />
             </div>
 
+            {/* Input Field: Message */}
             <div className="space-y-1">
                 <label className="text-sm font-bold text-secondary font-['Montserrat']">Your Message</label>
                 <textarea 
@@ -144,6 +203,7 @@ function ContactForm() {
                 ></textarea>
             </div>
 
+            {/* Submit Button */}
             <button 
                 type="submit" 
                 className="w-full py-4 bg-secondary text-white font-bold rounded-xl shadow-lg hover:bg-accent hover:shadow-orange-500/30 transition-all duration-300 flex justify-center items-center gap-2 transform active:scale-[0.98]"

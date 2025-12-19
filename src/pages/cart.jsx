@@ -1,76 +1,41 @@
-// import React from "react";
-// import { loadCart } from "../utilities/cart.js";
-// import { CiCircleChevDown } from "react-icons/ci";
-// import { CiCircleChevUp } from "react-icons/ci";
-
-
-// export default function cartPage() {
-
-//     const cart = loadCart();
-
-//     return (
-//         <div className="w-full h-[calc(100vh-100px)] bg-primary flex flex-col items-center pt-[25px]">
-//             <div className="w-[400px] h-[400px] bg-green-200 flex flex-col gap-4 p-4 overflow-y-auto">
-//                 {
-//                     cart.map((item, index) => {
-//                         return (
-//                             <div key={index} className="w-full h-[120px] bg-white flex">
-//                                 <img src={item.image} alt="" className="h-full aspect-square object-cover"/>
-//                                 <div className="w-[250px] h-full bg-accent flex flex-col pl-[5px] pt-[10px]">
-//                                     <h1 className="text-lg font-semibold p-2 w-full text-wrap">{item.name}</h1>
-//                                     {/* productID */}
-//                                     <span className="text-sm text-secondary p-2">ID: {item.productID}</span>
-//                                 </div>
-//                                 <div className="w-[100px] h-full bg-yellow flex flex-col justify-center items-center">
-//                                     <CiCircleChevUp className="text-3xl "></CiCircleChevUp>
-//                                     <span className="text-4xl font-semibold">{item.quantity}</span>
-//                                     <CiCircleChevDown className="text-3xl "></CiCircleChevDown>
-//                                 </div>
-//                             </div>
-//                         )
-//                     })
-//                 }
-//             </div>
-//         </div>
-//     )
-// }
-
-// Above is the previous code. Below is the updated code.
-
 import React, { useEffect, useState } from "react";
-import { addToCart, getTotal, loadCart } from "../utilities/cart.js";
-import { CiCircleChevDown } from "react-icons/ci";
-import { CiCircleChevUp } from "react-icons/ci";
-import { BiTrash } from "react-icons/bi";
 import { Link } from "react-router-dom";
+import { CiCircleChevDown, CiCircleChevUp } from "react-icons/ci";
+import { BiTrash } from "react-icons/bi";
+import { addToCart, getTotal, loadCart } from "../utilities/cart.js";
 
+/**
+ * CartPage Component
+ * =============================================================================
+ * This component renders the user's shopping cart.
+ * * Functionality:
+ * 1. Loads cart data from a utility function (likely LocalStorage).
+ * 2. Displays items in a responsive list format.
+ * 3. Provides controls to increase, decrease, or remove items.
+ * 4. Calculates and displays the subtotal and grand total.
+ * 5. Provides navigation to the Checkout page.
+ * =============================================================================
+ */
 export default function cartPage() {
     
-    // Logic remains unchanged
+    // State Initialization:
+    // 'cart' holds the array of product objects currently selected by the user.
+    // We initialize it immediately by calling the 'loadCart' utility.
     const [cart, setCart] = React.useState(loadCart());
 
-    // const [cartLoaded, setCartLoaded] = React.useState(false);
-
-    // useEffect(() => {
-    //     if (!cartLoaded) {
-    //         setCart(loadCart());
-    //         setCartLoaded(true);
-    //     }
-    // }, [cartLoaded]);
-
-
-
     return (
-        // Changed: Main container uses 'bg-primary' (cream) from your theme. 
-        // Added 'gap-6' for spacing and 'py-10' for vertical breathing room.
+        /* Main Container
+           ---------------------------------------------------------------------
+           - w-full min-h-screen: Ensures the background covers the entire viewport.
+           - bg-primary: Applies the application's cream theme color.
+           - flex-col items-center: Centers the content column horizontally.
+        */
         <div className="w-full min-h-screen bg-primary flex flex-col items-center py-10">
             
-            {/* CHANGED HEADER STYLE TO MATCH SCREENSHOT:
-                - Wrapped in a div for easier centering.
-                - Split "Your Shopping Cart" into two spans.
-                - "Your": Uses 'text-secondary' (Dark), Bold, Serif to match "Our".
-                - "Shopping Cart": Uses 'text-accent' (Orange), Italic, Serif to match "Collection".
-                - Increased text size to 'text-5xl' for that banner-like appearance.
+            {/* Header Section
+               -----------------------------------------------------------------
+               Displays the page title using mixed typography styling (Serif/Sans)
+               to distinguish "Your" from "Shopping Cart".
             */}
             <div className="text-center mb-8">
                 <h1 className="font-serif text-4xl md:text-5xl">
@@ -79,113 +44,135 @@ export default function cartPage() {
                 </h1>
             </div>
 
-            {/* Changed: Replaced fixed w-[400px] h-[400px] bg-green-200 with a responsive card.
-                - 'w-full max-w-3xl': Responsive width that stops growing at a nice reading width.
-                - 'bg-white': Clean background to contrast with bg-primary.
-                - 'shadow-xl rounded-2xl': Adds depth and elegance (modern card style).
-                - 'overflow-hidden': Ensures children don't break the rounded corners.
+            {/* Cart Card Container
+               -----------------------------------------------------------------
+               A white, elevated card that contains the list of items.
+               - max-w-3xl: Restricts width on large screens for readability.
+               - overflow-hidden: Ensures rounded corners clip the content.
             */}
             <div className="w-full max-w-3xl bg-white shadow-xl rounded-2xl flex flex-col overflow-hidden">
                 
-                {/* Changed: Added a scrolling container for the list itself 
-                    if the cart gets too long, keeping the page tidy.
-                */}
+                {/* Scrollable List Area: Handles vertical overflow if the cart is long */}
                 <div className="flex flex-col overflow-y-auto h-full max-h-[600px] divide-y divide-gray-100">
                     {
+                        /* Iterate through the cart array to render each product row.
+                           'item' represents the specific product object.
+                           'index' provides a unique key for React rendering.
+                        */
                         cart.map((item, index) => {
                             return (
-                                // Changed: Cart Item Container
-                                // - Removed fixed height (h-[120px]) to allow content to fit naturally.
-                                // - Added 'p-6' for spacious internal padding.
-                                // - 'hover:bg-gray-50': Adds a subtle interaction effect.
                                 <div key={index} className="w-full flex items-center p-6 gap-6 hover:bg-gray-50 transition-colors relative items-center justify-center">
 
-                                    <button className="absolute top-2 right-2 text-red-500 font-bold right-[-50px] text-2xl rounded-full aspect-square hover:bg-red-500 p-[5px] transition hover:text-white hover:scale-110"
-                                        onClick={
-                                            () => {
-                                                addToCart(item, -item.quantity);
-                                                setCart(loadCart());
-                                            }}>
+                                    {/* Delete Button
+                                       ---------------------------------------------
+                                       Positioned absolutely to the top-right.
+                                       
+                                       Function Step-by-Step:
+                                       1. User clicks the Trash icon.
+                                       2. addToCart is called with negative quantity equal to current quantity.
+                                          This effectively reduces the count to 0, removing it from the utility.
+                                       3. setCart(loadCart()) triggers a re-render with the updated list.
+                                    */}
+                                    <button 
+                                        className="absolute top-2 right-2 text-red-500 font-bold right-[-50px] text-2xl rounded-full aspect-square hover:bg-red-500 p-[5px] transition hover:text-white hover:scale-110"
+                                        onClick={() => {
+                                            addToCart(item, -item.quantity);
+                                            setCart(loadCart());
+                                        }}
+                                    >
                                         <BiTrash></BiTrash>
                                     </button>
 
-                                    
-                                    {/* FIXED IMAGE ISSUE:
-                                        - Added 'w-24 h-24' (96px): Explicit size ensures the image never collapses to 0 width.
-                                        - Added 'flex-shrink-0': Prevents the text from squashing the image.
-                                        - Added 'rounded-lg border': Makes it look polished.
-                                    */}
+                                    {/* Product Image: Fixed dimensions to prevent layout shifts */}
                                     <img 
                                         src={item.image} 
                                         alt={item.name} 
                                         className="w-24 h-24 object-cover rounded-lg flex-shrink-0 border border-gray-200 shadow-sm"
                                     />
 
-                                    {/* Changed: Product Details
-                                        - Removed 'bg-accent' (orange background) to improve readability.
-                                        - Used 'flex-1' to take up remaining space.
-                                    */}
+                                    {/* Product Meta Data: Name and ID */}
                                     <div className="flex-1 flex flex-col justify-center gap-1">
-                                        {/* Name: Used 'text-secondary' (Dark Grey) for strong contrast */}
                                         <h1 className="text-xl font-bold text-secondary leading-tight">
                                             {item.name}
                                         </h1>
-                                        {/* ID: Styled as a subtle caption */}
                                         <span className="text-xs text-gray-400 font-medium uppercase tracking-wider">
                                             ID: {item.productID}
                                         </span>
                                     </div>
 
-                                    {/* Changed: Quantity Controls
-                                        - Removed 'bg-yellow'.
-                                        - Aligned vertically with a clean look.
-                                        - Icons use 'text-accent' (Orange) to match your theme highlights.
+                                    {/* Quantity Controls
+                                       ---------------------------------------------
+                                       Allows the user to increment or decrement the specific item count.
                                     */}
                                     <div className="flex flex-col items-center justify-center gap-1 min-w-[50px]">
+                                        {/* Increment Button */}
                                         <CiCircleChevUp 
                                             className="text-3xl text-accent cursor-pointer hover:text-orange-600 transition-transform active:scale-90"
                                             title="Increase quantity"
-                                            onClick={
-                                                () => {
-                                                    addToCart(item, 1);
-                                                    setCart(loadCart());
-                                                    }
-                                                }
+                                            onClick={() => {
+                                                addToCart(item, 1);
+                                                setCart(loadCart());
+                                            }}
                                         />
                                         
+                                        {/* Current Quantity Display */}
                                         <span className="text-lg font-bold text-secondary tabular-nums">
                                             {item.quantity}
                                         </span>
                                         
+                                        {/* Decrement Button */}
                                         <CiCircleChevDown 
                                             className="text-3xl text-accent cursor-pointer hover:text-orange-600 transition-transform active:scale-90"
                                             title="Decrease quantity"
-                                            onClick={
-                                                () => {
-                                                    addToCart(item, -1);
-                                                    setCart(loadCart());
-                                                    }
-                                                }
+                                            onClick={() => {
+                                                addToCart(item, -1);
+                                                setCart(loadCart());
+                                            }}
                                         />
                                     </div>
 
+                                    {/* Price Section
+                                       ---------------------------------------------
+                                       Displays the item price.
+                                       Conditionally renders a strikethrough price if a discount is applied.
+                                    */}
                                     <div className="w-[180px] h-full flex flex-col justify-center items-center">
                                         {
-                                            item.labelledPrice>item.price&&
-                                            <span className="text-secondary text-lg text-right pr-[10px] mt-[20px] line-through">LKR: {item.labelledPrice.toFixed(2)}</span>
+                                            item.labelledPrice > item.price &&
+                                            <span className="text-secondary text-lg text-right pr-[10px] mt-[20px] line-through">
+                                                LKR: {item.labelledPrice.toFixed(2)}
+                                            </span>
                                         }
-                                        <span className="text-accent text-2xl font-semibold text-right pr-[10px] mt-2 flex">LKR: {item.price.toFixed(2)}</span>
+                                        <span className="text-accent text-2xl font-semibold text-right pr-[10px] mt-2 flex">
+                                            LKR: {item.price.toFixed(2)}
+                                        </span>
                                     </div>
                                 </div>
                             )
                         })
                     }
+
+                    {/* Footer Section
+                       ---------------------------------------------------------
+                       Contains the Grand Total calculation and the Checkout navigation.
+                    */}
                     <div className="w-full flex items-center p-6 gap-6 hover:bg-gray-50 transition-colors flex justify-end items-center relative">
-                        <Link state={cart} to="/checkout" className="absolute left-6 bg-accent text-white font-semibold hover:bg-orange-600 px-4 py-2 rounded-full">
+                        {/* Checkout Link:
+                           Passes the current 'cart' state to the checkout route via the 'state' prop.
+                        */}
+                        <Link 
+                            state={cart} 
+                            to="/checkout" 
+                            className="absolute left-6 bg-accent text-white font-semibold hover:bg-orange-600 px-4 py-2 rounded-full"
+                        >
                             Proceed to Checkout
                         </Link>
+                        
+                        {/* Total Calculation Display */}
                         <div className="h-[50px]">
-                            <span className="w-full text-accent text-2xl font-semibold text-right pr-[10px] mt-2 flex justify-end items-center">Total: LKR {getTotal().toFixed(2)}</span>
+                            <span className="w-full text-accent text-2xl font-semibold text-right pr-[10px] mt-2 flex justify-end items-center">
+                                Total: LKR {getTotal().toFixed(2)}
+                            </span>
                         </div>
                     </div>
                 </div>

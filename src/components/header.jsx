@@ -1,61 +1,57 @@
-// import { Toaster } from "react-hot-toast";
-// import { Link } from "react-router-dom";
-
-// export default function Header(){
-//     return(
-//         <header className="w-full bg-accent h-[100px] text-white px-[40px]">
-//             <div className="w-full h-full flex relative">
-//                 <img src="/logo.png" className="h-full absolute w-[170px] left-0 object-cover"/>
-//                 <div className="h-full flex justify-center items-center w-full gap-[20px] text-lg">
-//                     {/* <a href="/">Home</a>
-//                     <a href="/product">Products</a>
-//                     <a href="/about">About</a>
-//                     <a href="/contact">Contact</a> */}
-
-                    
-//                     <Toaster position="top-right"></Toaster>
-                    
-//                     <Link to="/">Home</Link> 
-//                     <Link to="/products">Products</Link>
-//                     <Link to="/about">About</Link>
-//                     <Link to="/contact">Contact</Link>
-//                 </div>
-//             </div>
-//         </header>
-//     )
-// }
-
-// Revised Header Component with Modern Design on Tuesday, December 9, 2025
-
 import { Toaster } from "react-hot-toast";
 import { Link } from "react-router-dom";
 import { FiShoppingCart } from "react-icons/fi";
 
+/**
+ * Header Component
+ * =============================================================================
+ * This functional component renders the main navigation bar of the application.
+ * * Functional Steps:
+ * 1. Initializes the header container with sticky positioning to remain at the 
+ * top of the viewport during scrolling.
+ * 2. Establishes a responsive container to center content and manage spacing.
+ * 3. Renders the application Logo, linking back to the root ('/') route.
+ * 4. Renders the Navigation menu containing internal links (Home, Products, About)
+ * and a distinct Call-to-Action (Contact) button.
+ * 5. Includes the 'Toaster' component for displaying global notifications.
+ * 6. Renders the Shopping Cart icon with absolute positioning.
+ * =============================================================================
+ */
 export default function Header() {
   return (
-    // CHANGE: Added 'sticky', 'z-50', and 'shadow-md' for a floating modern header feel.
-    // CHANGE: Switched bg to 'bg-primary' (cream) for a cleaner, material look instead of heavy orange.
+    /* Main Header Container
+      - sticky: Keeps header fixed at the top.
+      - z-50: Ensures header stays above other content.
+      - backdrop-blur-sm: Adds a frosted glass effect to the background.
+    */
     <header className="w-full bg-primary/95 backdrop-blur-sm h-[90px] shadow-md sticky top-0 z-50 px-6 transition-all duration-300">
       
-      {/* CHANGE: Used 'max-w-7xl' and 'justify-between' to push Logo and Nav apart naturally */}
+      {/* Content Wrapper: Restricts max width and handles flex alignment */}
       <div className="max-w-7xl mx-auto h-full flex justify-between items-center">
         
-        {/* LOGO SECTION */}
-        {/* CHANGE: Removed 'absolute'. Added hover scale effect for interactivity. */}
+        {/* 1. LOGO SECTION
+          Wraps the image in a React Router Link to enable client-side navigation to Home.
+        */}
         <Link to="/" className="flex-shrink-0">
-            <img 
-                src="/logo.png" 
-                className="h-[60px] w-auto object-contain hover:scale-105 transition-transform duration-300" 
-                alt="Logo"
-            />
+          <img 
+            src="/logo.png" 
+            className="h-[60px] w-auto object-contain hover:scale-105 transition-transform duration-300" 
+            alt="Logo"
+          />
         </Link>
 
-        {/* NAVIGATION SECTION */}
+        {/* 2. NAVIGATION SECTION
+          Contains the main menu links and the notification toaster.
+        */}
         <div className="flex items-center gap-8 font-medium text-secondary">
           
-          <Toaster position="top-right"></Toaster>
+          {/* Global Notification Toaster */}
+          <Toaster position="top-right" />
 
-          {/* CHANGE: Added generic hover underline animation for links */}
+          {/* Navigation Link: Home 
+            Uses a 'group' class to trigger the nested span's width expansion on hover,
+            creating an animated underline effect.
+          */}
           <Link 
             to="/" 
             className="relative group hover:text-accent transition-colors duration-300"
@@ -64,6 +60,7 @@ export default function Header() {
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
           </Link>
 
+          {/* Navigation Link: Products */}
           <Link 
             to="/products" 
             className="relative group hover:text-accent transition-colors duration-300"
@@ -72,6 +69,7 @@ export default function Header() {
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
           </Link>
 
+          {/* Navigation Link: About */}
           <Link 
             to="/about" 
             className="relative group hover:text-accent transition-colors duration-300"
@@ -80,7 +78,10 @@ export default function Header() {
             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-accent transition-all duration-300 group-hover:w-full"></span>
           </Link>
 
-          {/* CHANGE: Styled 'Contact' as a pill button (CTA) to make it stand out */}
+          {/* Call-to-Action (CTA): Contact
+            Styled differently from standard links (pill shape, background color)
+            to draw user attention.
+          */}
           <Link 
             to="/contact" 
             className="px-6 py-2.5 bg-accent text-white rounded-full shadow-lg hover:shadow-orange-500/40 hover:-translate-y-0.5 transition-all duration-300 font-semibold"
@@ -89,8 +90,14 @@ export default function Header() {
           </Link>
         </div>
 
-        <Link to="/cart" className="text-2xl text-secondary hover:text-accent transition-colors duration-300 absolute right-6 top-5 bottom-5 flex items-center">
-          <FiShoppingCart></FiShoppingCart>
+        {/* 3. SHOPPING CART SECTION
+          Positioned absolutely to the right side of the container.
+        */}
+        <Link 
+          to="/cart" 
+          className="text-2xl text-secondary hover:text-accent transition-colors duration-300 absolute right-6 top-5 bottom-5 flex items-center"
+        >
+          <FiShoppingCart />
         </Link>
 
       </div>

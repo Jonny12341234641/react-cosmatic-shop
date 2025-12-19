@@ -1,130 +1,81 @@
-// import { useState } from "react";
-
-// export default function AddProductPage() {
-
-//     const [productID, setProductID] = useState({});
-//     const [name, setName] = useState({});
-//     const [altNames, setAltNames] = useState({});
-//     const [description, setDescription] = useState({});
-//     const [price, setPrice] = useState({});
-//     const [labelledPrice, setLabelledPrice] = useState({});
-//     const [category, setCategory] = useState({});
-//     const [images, setImages] = useState([]);
-//     const [stock, setStock] = useState(0);
-
-//     return (
-//         <div className="w-full h-full flex justify-center items-center">
-//             <div className="w-[600px] h-[300px] border-accent border-[2px] flex flex-col items-center">
-//                 <input value={productID} onChange={(e) => {setProductID(e.target.value)}} />
-//                 <input value={name} onChange={(e) => {setName(e.target.value)}} />
-//                 <input value={altNames} onChange={(e) => {setAltNames(e.target.value)}} />
-//                 <textarea value={description} onChange={(e) => {setDescription(e.target.value)}} />
-//                 <input type = "number" value={price} onChange={(e) => {setPrice(e.target.value)}} />
-//                 <input type = "number" value={labelledPrice} onChange={(e) => {setLabelledPrice(e.target.value)}} />
-//                 <select value={category} onChange={(e) => {setCategory(e.target.value)}}>
-//                     <option value="cream">Cream</option>
-//                     <option value="lotion">Lotion</option>
-//                     <option value="serum">Serum</option>
-//                 </select>
-//                 <input type="file" onChange={(e) => {setImages(e.target.files)}} multiple/>
-//                 <input value={stock} onChange={(e) => {setStock(e.target.value)}} />
-//             </div>
-//         </div>
-//     )
-
-    //  {
-    //     productID : {
-    //         type : String,
-    //         required : true,
-    //         unique : true
-    //     },
-    //     name : {   
-    //         type : String,
-    //         required : true
-    //     },
-    //     altNames : {
-    //         type : [String],
-    //         required : true
-    //     },
-    //     images : { // <--- Added this
-    //         type : [String],
-    //         default : []
-    //     },
-    //     description : {
-    //         type : String,
-    //         required : true
-    //     },
-    //     price : {
-    //         type : Number,
-    //         required : true
-    //     },
-    //     labelledPrice : {
-    //         type : Number,
-    //         required : true
-    //     },
-    //     category :  {
-    //         type : String,
-    //         required : true
-    //     },
-    //     stock : { // <--- Added this
-    //         type : Number,
-    //         required : true,
-    //         default : 0
-    //     }
-    // },
-
-
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import mediaUpload from "../../utilities/mediaUpload.jsx";
 import toast from "react-hot-toast";
 
-
+/**
+ * AddProductPage Component
+ * =============================================================================
+ * A comprehensive form interface for administrators to add new products to the inventory.
+ * * Functional Capabilities:
+ * 1. Manages local state for all product attributes (ID, Name, Price, Stock, etc.).
+ * 2. Handles multi-file image uploads via an external utility.
+ * 3. Aggregates form data and uploaded image URLs into a payload.
+ * 4. Submits the payload to the backend API with secure authentication.
+ * =============================================================================
+ */
 export default function AddProductPage() {
-    // Corrected initialization to "" (strings) instead of {} (objects) 
-    // so the inputs don't display "[object Object]"
+    
+    // State Management:
+    // Initializing state with empty strings ("") to ensure controlled inputs 
+    // and prevent undefined or object rendering errors in the UI.
     const [productID, setProductID] = useState("");
     const [name, setName] = useState("");
     const [altNames, setAltNames] = useState("");
     const [description, setDescription] = useState("");
     const [price, setPrice] = useState("");
     const [labelledPrice, setLabelledPrice] = useState("");
-    const [category, setCategory] = useState("cream"); // Default to first option
+    const [category, setCategory] = useState("cream"); // Defaults to the first select option
     const [images, setImages] = useState([]);
     const [stock, setStock] = useState(0);
+    
+    // Navigation hook for redirecting the user after form submission
     const navigate = useNavigate();
 
-async function addProduct(){
+    /**
+     * addProduct Function
+     * -------------------------------------------------------------------------
+     * Asynchronous handler for the "Save Product" action.
+     * * Steps:
+     * 1. Authentication Check: Verifies if a user token exists. Redirects if missing.
+     * 2. Image Processing: 
+     * - Iterates through selected files.
+     * - Uploads them concurrently using Promise.all for performance.
+     * - Extracts the public URLs from the upload response.
+     * 3. Data Formatting: Splits comma-separated keywords into an array.
+     * 4. API Submission: Sends the constructed product object to the backend.
+     * 5. Feedback: Displays success/error toasts and handles navigation.
+     * -------------------------------------------------------------------------
+     */
+    async function addProduct(){
+        // Step 1: Retrieve and validate authentication token
         const token = localStorage.getItem("token");
         if(token == null){
             navigate("/login");
-            return
+            return;
         }
 
-        const promises = []
-
+        // Step 2: Prepare image upload promises
+        const promises = [];
         for(let i = 0; i < images.length; i++){
             console.log(images[i]);
             promises[i] = mediaUpload(images[i]);
         }
 
-        // 1. Declare variable here
         let urls = [];
 
-        try{
-            // 2. Remove 'const' here. Update the outer variable.
-            // urls = await Promise.all(promises); 
-            
-            // const alternativeNames = altNames.split(",");
-
+        try {
+            // Step 3: Execute all upload promises concurrently
             const uploadResolves = await Promise.all(promises);
 
-            // 2. FIX: Extract just the 'publicUrl' string from each response object
+            // Step 4: Map the responses to extract only the public URL strings
             urls = uploadResolves.map((response) => response.data.publicUrl);
 
+            // Step 5: Process the alternative names string into an array
             const alternativeNames = altNames.split(",");
 
+            // Step 6: Construct the final product payload object
             const product = {
                 productID : productID,
                 name : name,
@@ -135,18 +86,22 @@ async function addProduct(){
                 labelledPrice : labelledPrice,
                 category : category,
                 stock : stock
-            }
+            };
 
-            // 3. FIX: Add the space after Bearer
+            // Step 7: Send POST request with Authorization header
             await axios.post(import.meta.env.VITE_API_URL + "/api/products", product, {
                 headers : {
                     "Authorization" : "Bearer " + token 
                 }
-            })
+            });
+
+            // Step 8: Handle success state
             toast.success("Product added successfully!");
-            navigate("/admin/products"); // Optional: Redirect after success
-        }catch(error){
-            console.log(error) // Log the error to see details
+            navigate("/admin/products"); 
+
+        } catch(error) {
+            // Step 9: Handle error state
+            console.log(error);
             const serverMessage = error.response?.data?.message || "Error adding product";
             toast.error("Error adding product");
         }
@@ -154,7 +109,7 @@ async function addProduct(){
         console.log(urls);
     }
 
-    // Reusable styles for inputs to keep JSX clean
+    // Reusable Tailwind CSS classes for consistent input styling across the form
     const inputStyle = "w-full px-4 py-3 rounded-lg border border-gray-300 bg-white text-secondary placeholder-gray-400 focus:outline-none focus:border-accent focus:ring-2 focus:ring-accent/20 transition-all duration-300 font-['Montserrat']";
     const labelStyle = "block text-sm font-semibold text-secondary mb-2 font-['Montserrat']";
 
@@ -162,7 +117,7 @@ async function addProduct(){
         <div className="min-h-screen w-full flex justify-center items-center bg-primary p-6">
             <div className="w-full max-w-3xl bg-white/80 backdrop-blur-sm shadow-2xl rounded-2xl border-t-4 border-accent overflow-hidden">
                 
-                {/* Header Section */}
+                {/* --- HEADER SECTION --- */}
                 <div className="bg-secondary p-6 text-center">
                     <h2 className="text-3xl font-bold text-primary font-['Playfair_Display'] tracking-wide">
                         Add New Product
@@ -172,10 +127,10 @@ async function addProduct(){
                     </p>
                 </div>
 
-                {/* Form Section */}
+                {/* --- FORM BODY SECTION --- */}
                 <div className="p-8 space-y-6">
                     
-                    {/* Row 1: ID and Name */}
+                    {/* Row 1: Product ID and Name */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         <div className="col-span-1">
                             <label className={labelStyle}>Product ID</label>
@@ -197,7 +152,7 @@ async function addProduct(){
                         </div>
                     </div>
 
-                    {/* Row 2: Alt Names */}
+                    {/* Row 2: Alternative Names (Tags) */}
                     <div>
                         <label className={labelStyle}>Alternative Names (Keywords)</label>
                         <input 
@@ -208,7 +163,7 @@ async function addProduct(){
                         />
                     </div>
 
-                    {/* Row 3: Description */}
+                    {/* Row 3: Description Text Area */}
                     <div>
                         <label className={labelStyle}>Description</label>
                         <textarea 
@@ -219,8 +174,9 @@ async function addProduct(){
                         />
                     </div>
 
-                    {/* Row 4: Pricing */}
+                    {/* Row 4: Pricing Inputs */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        {/* Selling Price */}
                         <div>
                             <label className={labelStyle}>Selling Price</label>
                             <div className="relative">
@@ -234,6 +190,7 @@ async function addProduct(){
                                 />
                             </div>
                         </div>
+                        {/* Labelled Price (MSRP) */}
                         <div>
                             <label className={labelStyle}>Labelled Price (MSRP)</label>
                             <div className="relative">
@@ -249,10 +206,10 @@ async function addProduct(){
                         </div>
                     </div>
 
-                    {/* Row 5: Category, Stock, Image */}
+                    {/* Row 5: Metadata (Category, Stock, Image) */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                         
-                        {/* Category */}
+                        {/* Category Dropdown */}
                         <div>
                             <label className={labelStyle}>Category</label>
                             <select 
@@ -266,7 +223,7 @@ async function addProduct(){
                             </select>
                         </div>
 
-                        {/* Stock */}
+                        {/* Stock Counter */}
                         <div>
                             <label className={labelStyle}>Stock Quantity</label>
                             <input 
@@ -277,7 +234,7 @@ async function addProduct(){
                             />
                         </div>
 
-                        {/* Image Upload */}
+                        {/* File Upload Input */}
                         <div>
                             <label className={labelStyle}>Product Images</label>
                             <label className="flex flex-col items-center justify-center w-full h-[50px] border-2 border-dashed border-accent/50 rounded-lg cursor-pointer bg-primary/20 hover:bg-accent/10 transition-colors">
@@ -289,6 +246,7 @@ async function addProduct(){
                                     multiple
                                 />
                             </label>
+                            {/* File Selection Indicator */}
                             {images.length > 0 && (
                                 <p className="text-xs text-accent mt-1 text-center font-medium">
                                     {images.length} files selected
@@ -298,14 +256,21 @@ async function addProduct(){
                     </div>
                 </div>
 
-                {/* Footer Action (Optional Visual Only) */}
-                <div onClick={()=>{
-                    navigate("/admin/products")
-                }} className="bg-gray-50 px-8 py-4 flex justify-end border-t border-gray-100 flex justify-center items-center-safe gap-2">
+                {/* --- FOOTER ACTION SECTION --- */}
+                {/* Note: The onClick handler here navigates to the products page, 
+                    but specific buttons also have their own handlers.
+                */}
+                <div 
+                    onClick={()=>{ navigate("/admin/products") }} 
+                    className="bg-gray-50 px-8 py-4 flex justify-end border-t border-gray-100 flex justify-center items-center-safe gap-2"
+                >
                     <button className="bg-primary text-secondary font-['Montserrat'] font-semibold py-2 px-8 rounded-full hover:bg-red-500 hover:shadow-lg transition-all transform active:scale-95 flex justify-center items-center">
                         Cancel
                     </button>
-                     <button onClick={addProduct} className="bg-accent text-primary font-['Montserrat'] font-semibold py-2 px-8 rounded-full hover:bg-[#e57020] hover:shadow-lg transition-all transform active:scale-95 flex justify-center items-center">
+                    <button 
+                        onClick={addProduct} 
+                        className="bg-accent text-primary font-['Montserrat'] font-semibold py-2 px-8 rounded-full hover:bg-[#e57020] hover:shadow-lg transition-all transform active:scale-95 flex justify-center items-center"
+                    >
                         Save Product
                     </button>
                 </div>
