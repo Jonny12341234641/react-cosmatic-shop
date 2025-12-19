@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import toast from 'react-hot-toast'; // FIX 1: Removed '/headless' so popups actually show
 
 export default function LoginPage() {
@@ -8,7 +8,17 @@ export default function LoginPage() {
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const navigate = useNavigate();
+    const location = useLocation();
 
+
+/**
+ * Attempts to log in a user with the given email and password
+ * If successful, stores the token and user data in local storage
+ * and redirects to the appropriate page based on the user's role
+ * If not successful, displays an error message based on the status code
+ * @param {string} email - The email of the user to log in
+ * @param {string} password - The password of the user to log in
+ */
     async function login() {
         try {
             const response = await axios.post(import.meta.env.VITE_API_URL + "/api/users/login", {  
@@ -23,10 +33,16 @@ export default function LoginPage() {
             toast.success("Login successful!");
 
             const user = response.data.user;
-            if(user.role == "admin"){
-                navigate("/admin"); // Redirect to the admin page
-            } else {
-                navigate("/"); // Redirect to the home page
+
+            if(location.state && location.state.from){
+                navigate(location.state.from);
+            }else{
+                //default logic if regular login
+                if(user.role == "admin"){
+                    navigate("/admin"); // Redirect to the admin page
+                } else {
+                    navigate("/"); // Redirect to the home page
+                }
             }
 
         } catch(e) {

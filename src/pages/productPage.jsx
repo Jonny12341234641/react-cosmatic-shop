@@ -44,6 +44,7 @@ export default function ProductPage() {
           {products.map((item) => (
             <ProductCard
               key={item.productID}
+              id={item.productID}
               name={item.name}
               price={item.price}
               img={item.images && item.images.length > 0 ? item.images[0] : "https://via.placeholder.com/300"}

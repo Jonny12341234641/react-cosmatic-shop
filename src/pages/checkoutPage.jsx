@@ -234,6 +234,7 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
+import { loadCart } from "../utilities/cart";
 
 
 export default function checkoutPage() {
@@ -261,31 +262,126 @@ export default function checkoutPage() {
         return total;
     }
 
+    /**
+     * Attempts to purchase the items in the cart.
+     * If the user is not logged in, redirects them to the login page.
+     * If the purchase is successful, logs a success message to the console.
+     * If an error occurs, logs an error message to the console and displays a toast with the error message.
+     * If the error is a 400 Bad Request, logs the error code and message to the console and displays a toast with the error message.
+     * If the error code is INSUFFICIENT_STOCK, logs an insufficient stock message to the console and navigates to the admin page.
+     */
+    // async function purchaseCart() {
+    //     const token = localStorage.getItem("token");
+    //     if (token == null) {
+    //         toast.error("Please login to make a purchase.");
+    //         navigate("/login", { state: { from: "/checkout" } });
+    //         return;
+    //     }
+
+    //     try {
+    //         const items = [];
+    //         for(let i=0; i<cart.length; i++) {
+    //             items.push({
+    //                 productID: cart[i].productID,
+    //                 quantity: cart[i].quantity,
+    //             });
+    //         }
+    //         await axios.post(import.meta.env.VITE_API_URL + "/api/orders",{
+    //             items: items,
+    //             address : "123, Sample Street, City, Country",
+    //             phone: "1234567890",
+    //         }, {
+    //             headers: {
+    //                 Authorization: `Bearer ${token}`,
+    //             },
+    //         })
+
+    //         console.log("Order placed successfully");
+    //         toast.success("Order placed successfully");
+    //         setCart([]);
+    //         navigate("/");
+
+
+    //     }catch (error) {
+    //         toast.error("An error occurred while processing your purchase.");
+    //         console.log(error);
+    //         //if error is 400..
+    //         if(error.response && error.response.status === 400) {
+    //             const code = error.response.data.code;
+    //             toast.error(error.response.data.message);
+    //             if(code === "INVALID_QUANTITY") {
+    //                 toast.error("Insufficient stock for some of the items in your cart.");
+    //                 //navigate("/admin");webkitURL; 
+    //             }else{
+    //                 toast.error(error.response.data.message);
+    //             }
+    //         }
+    //     }
+    // }
+
+/**
+ * Attempts to purchase the items in the cart.
+ * If the user is not logged in, redirects them to the login page.
+ * If the purchase is successful, logs a success message to the console.
+ * If an error occurs, logs an error message to the console and displays a toast with the error message.
+ * If the error is a 400 Bad Request, logs the error code and message to the console and displays a toast with the error message.
+ * If the error code is INSUFFICIENT_STOCK, logs an insufficient stock message to the console and navigates to the admin page.
+ */
     async function purchaseCart() {
         const token = localStorage.getItem("token");
-        if (token != null) {
+        
+        // 1. Check if token exists locally first
+        if (token == null) {
             toast.error("Please login to make a purchase.");
-            navigate("/login");
+            navigate("/login", { state: { from: "/checkout" } });
             return;
         }
 
         try {
-            const items = [];
-            for(let i=0; i<cart.length; i++) {
-                items.push({
-                    productID: cart[i].productID,
-                    quantity: cart[i].quantity,
-                });
-            }
-            const response = await axios.post(import.meta.env.VITE_API_URL + "/api/orders",{
-                address : "123, Sample Street, City, Country",
+            // Prepare the items list
+            const items = cart.map(item => ({
+                productID: item.productID,
+                quantity: item.quantity,
+            }));
+
+            // 2. Send the request WITH the items
+            await axios.post(import.meta.env.VITE_API_URL + "/api/orders", {
+                items: items,
+                address: "123, Sample Street, City, Country",
+                phone: "0712345678"
             }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
-            })
-        }catch (error) {
+            });
+
+            // Success handling
+            toast.success("Order placed successfully");
+            setCart([]);
+            navigate("/");
+
+        } catch (error) {
+            console.log(error);
             toast.error("An error occurred while processing your purchase.");
+
+            // 3. Better Error Handling
+            if (error.response) {
+                // If 401 (Unauthorized), redirect to login
+                if (error.response.status === 401) {
+                    toast.error("Please login to continue.");
+                    navigate("/login", { state: { from: "/checkout" } });
+                } 
+                // If 400 (Bad Request like 'Items not provided' or 'Stock')
+                else if (error.response.status === 400) {
+                    toast.error(error.response.data.message);
+                } 
+                // Any other server error
+                else {
+                    toast.error("Server error. Please try again later.");
+                }
+            } else {
+                toast.error("Network error. Please check your connection.");
+            }
         }
     }
 

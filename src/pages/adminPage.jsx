@@ -6,6 +6,7 @@ import { AiOutlineProduct } from "react-icons/ai";
 import AdminProductPage from "./admin/adminProductPage";
 import AddProductPage from "./admin/adminAddNewProduct";
 import UpdateProductPage from "./admin/adminUpdateProduct";
+import AdminOrdersPage from "./admin/adminOrdersPage";
 
 
 export default function AdminPage() {
@@ -86,15 +87,7 @@ export default function AdminPage() {
                                 </div>
                             }></Route>
                             <Route path="/products" element={<AdminProductPage />}></Route>
-                            <Route path="/orders" element={
-                                <div className="bg-white p-8 rounded-2xl shadow-sm border border-accent/10">
-                                    <h1 className="text-3xl font-['Playfair_Display'] text-secondary mb-6">Recent Orders</h1>
-                                    <div className="h-64 bg-primary/30 rounded-xl flex items-center justify-center text-secondary/50 font-['Montserrat']">
-                                        No active orders found.
-                                    </div>
-                                </div>
-                            }></Route>
-                            {/* Note: In your original code, this route was nested. I kept the logic intact. */}
+                            <Route path="/orders" element={<AdminOrdersPage></AdminOrdersPage>}></Route>
                             <Route path="/add-product" element={<AddProductPage/>}></Route>
                             <Route path="/update-product" element={<UpdateProductPage/>}></Route>
                         </Routes>
